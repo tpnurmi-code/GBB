@@ -40,6 +40,6 @@ A central principle of the project is that interpretability must be earned empir
 
 ## Current status
 
-The current GBB implementation is a prototype developed in Python and PyTorch. It is intended as an experimental research framework for interpretable neuroimaging and biologically inspired machine learning.
+The current GBB implementation is a prototype developed in Python and PyTorch. It is intended as an experimental research framework for interpretable neuroimaging and biologically inspired machine learning. Refractoring of the code is in progress as it contains many files that are too long.
 
 The document below describes the project, its scope, validation strategy, and future development plans: [GBB project research plan](https://github.com/user-attachments/files/29357478/GBB_project_research_plan.pdf)
