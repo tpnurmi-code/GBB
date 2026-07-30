@@ -31,7 +31,7 @@ A central principle of the project is that interpretability must be earned empir
     recovery of known parameters in synthetic-data experiments;
     biological anchoring against independent sensorimotor, laminar, or multimodal evidence.
 
-Current status
+## Current status
 
 The current GBB implementation is a prototype developed in Python and PyTorch. It is intended as an experimental research framework for interpretable neuroimaging and biologically inspired machine learning.
 
