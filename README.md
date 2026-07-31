@@ -64,9 +64,9 @@ These different advanced learning strategies are compared against each other and
 Lastly, we will try an advanced “dendritic” architecture where we will encompass the feature extractors by gated linear units (GLU)  and dendritic tree networks (DTNs). The GLU+DTNs will act as a gating mechanism (Output=Signal×σ(Gate)) that allows selective passing or blocking of information from the features extractors. This gating mechanism simulates shunting inhibition of real neurons and makes our model more expressive, context dependent and biologically more realistic.  
 
     
-| LOCAL (Bio-Plausible) | GLOBAL (Math-Heavy) | 
-| :---         |     :---:      |          ---: |
-| ERROR-DRIVEN (Goal-Directed)   | Predictive Error Minimization <br>  Bio-Approximated Gradients   | Global Error Backprop (Baseline)   |
-| ACTIVITY-DRIVEN (Self-Organizing)    | Competitive Self-Organization       | Neuromodulated Reinforcement      |
+| LOCAL (Bio-Plausible) | GLOBAL (Math-Heavy) |
+|---| ---| ---|
+|'ERROR-DRIVEN (Goal-Directed)' | Predictive Error Minimization <br>  Bio-Approximated Gradients   | Global Error Backprop (Baseline)   |
+|'ACTIVITY-DRIVEN (Self-Organizing)' | Competitive Self-Organization       | Neuromodulated Reinforcement      |
 
 
