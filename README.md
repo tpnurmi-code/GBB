@@ -70,29 +70,16 @@ Lastly, we will try an advanced “dendritic” architecture where we will encom
 
 ## Installation
 ### Required Python packages
-### 1.
-numpy
-### 2.
-scipy
-### 3.
-torch
-### 4.
-nibabel
-### 5.
-nilearn
-### 6.
-pandas
-### 7.
-matplotlib
-### 8.
-seaborn
-### 9.
-h5py
-### 10.
-tqdm
-### 11.
-tensorboard
-### 12.
-mne
-### 13.
-optuna
+1. numpy
+2. scipy
+3. torch
+4. nibabel
+5. nilearn
+6. pandas
+7. matplotlib
+8.seaborn
+9. h5py
+10. tqdm
+11. tensorboard
+12. mne
+13. optuna (optional for distributed computing)
