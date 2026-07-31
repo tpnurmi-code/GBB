@@ -43,3 +43,30 @@ A central principle of the project is that interpretability must be earned empir
 The current GBB implementation is a prototype developed in Python and PyTorch. It is intended as an experimental research framework for interpretable neuroimaging and biologically inspired machine learning. Refractoring of the code is in progress as it contains many files that are too long.
 
 The document below describes the project, its scope, validation strategy, and future development plans: [GBB project research plan](https://github.com/user-attachments/files/29357478/GBB_project_research_plan.pdf)
+
+## Future plans (Phase II)
+After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. This phase will explore novel learning and training rules, algorithms and strategies. 
+
+The GBB architecture is intended to be developed from an autoregressive to a purely generative model by gradually reducing and eventually disabling the input from the fMRI-timeseries to the model during the training process. Thus, when training the generative model, the training will begin as a autoregressive model that tries to predict the future values of the fMRI time-series based on previous values of the fMRI-timeseries and stimuli. The strength of the fMRI-timeseries input signal is then gradually degraded and finally removed, leaving only the input signal from the stimuli. The fMRI time-series is then only used to calculate the prediction error. This approach and move from autoregressive to a causal generative model will be challenging but this kind of pressure of trying to predict brain responses from stimulus data might actually reveal precious results as we expect the generative causal GBB to mimic the real brain more genuinely.
+
+The stable baseline model will proceed from the traditional Adaptive Moment Estimation (Adam) optimizer learning strategy to a test bench to more biologically-inspired learning strategies. These learning strategies include: 
+### 1. Global Error Backprop 
+which will be the standard Adam training described in Phase I and forms a baseline model to compare other learning strategies with, 
+### 2. Predictive Error Minimization 
+this learning strategy uses predictive coding for the FastKAN layers and Hebbian learning strategy for the CfC layers to train the GBB.  
+### 3. Bio-Approximated Gradients 
+is more biologically plausible than standard backpropagation but approximates similar kind of gradient descent. In the standard backpropagation/gradient descent algorithm, the connection vector of a neuron is W, and in order to calculate the gradients, a transpose of W, W^{T} must be known. This would suggests that the presynaptic neuron would have to know exactly the strength of the postsynaptic neuron’s connection to the next layer, which seems biolgocially implausible. Bio-Approximated Gradients solves this problem by replacing W^{T} with a random connection matrix B where the weights stay the same after the initial intialization. Remarkably, the forward weights, W adjust to the randomness of B and the Bio-Approximated Gradients begins to approximate backprobagation/gradient descent.    
+### 4. Neuromodulated Reinforcement 
+mimics the dopaminergic system as a mechanism of learning where the node-specific loss gradient for each neuron is replaced with a global error signal with a radius (sphere of influence). No neuron has direct information whether to adjusts its weights. However, the global error signal will correlate with neuron’s performance after thousands of repetitions, albeit slower than backprobagation 
+### 5. Competitive Self-Organization 
+uses “winner-takes-all” logic where the node/neuron with highest activation sends lateral inhibition to its neighbouring nodes and is only one in its neighbourhood that gets to update its weights. This creates a sparse network that should maximize efficiency. The different learning strategies are listed below in a table along local vs. global and error-driven vs. activity driven dimensions.
+These different advanced learning strategies are compared against each other and the baseline backpropagation strategy on multiple criteria. These criteria are fMRI time-series accuracy measures such as correlation, MSE and the first derivate with both autoregressive and causal generative GBB architectures. Antoher criteria will cover biological plausibility and resource-effieciency of these learning strategies. Biological plausibility will be determined by analysing the network topology and other neural network properties produced by each learning strategy and comparing them to biological equivalents. Efficiency criteria cover sparness of the networks, its memory and computational as well as energy consumption requirements and will be directly related to our green AI goal.
+Lastly, we will try an advanced “dendritic” architecture where we will encompass the feature extractors by gated linear units (GLU)  and dendritic tree networks (DTNs). The GLU+DTNs will act as a gating mechanism (Output=Signal×σ(Gate)) that allows selective passing or blocking of information from the features extractors. This gating mechanism simulates shunting inhibition of real neurons and makes our model more expressive, context dependent and biologically more realistic.  
+
+    
+| LOCAL (Bio-Plausible) | GLOBAL (Math-Heavy) | 
+| :---         |     :---:      |          ---: |
+| ERROR-DRIVEN (Goal-Directed)   | Predictive Error Minimization <br>  Bio-Approximated Gradients   | Global Error Backprop (Baseline)   |
+| ACTIVITY-DRIVEN (Self-Organizing)    | Competitive Self-Organization       | Neuromodulated Reinforcement      |
+
+
