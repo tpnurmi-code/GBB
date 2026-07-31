@@ -68,4 +68,18 @@ Lastly, we will try an advanced “dendritic” architecture where we will encom
 | **ERROR-DRIVEN (Goal-Directed)** | Predictive Error Minimization<br>Bio-Approximated Gradients | Global Error Backprop (Baseline) |
 | **ACTIVITY-DRIVEN (Self-Organizing)** | Competitive Self-Organization | Neuromodulated Reinforcement |
 
-
+## Installation
+### Required packages
+numpy
+scipy
+torch
+nibabel
+nilearn
+pandas
+matplotlib
+seaborn
+h5py
+tqdm
+tensorboard
+mne
+optuna
