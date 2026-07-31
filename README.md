@@ -63,7 +63,7 @@ uses “winner-takes-all” logic where the node/neuron with highest activation 
 These different advanced learning strategies are compared against each other and the baseline backpropagation strategy on multiple criteria. These criteria are fMRI time-series accuracy measures such as correlation, MSE and the first derivate with both autoregressive and causal generative GBB architectures. Antoher criteria will cover biological plausibility and resource-effieciency of these learning strategies. Biological plausibility will be determined by analysing the network topology and other neural network properties produced by each learning strategy and comparing them to biological equivalents. Efficiency criteria cover sparness of the networks, its memory and computational as well as energy consumption requirements and will be directly related to our green AI goal.
 Lastly, we will try an advanced “dendritic” architecture where we will encompass the feature extractors by gated linear units (GLU)  and dendritic tree networks (DTNs). The GLU+DTNs will act as a gating mechanism (Output=Signal×σ(Gate)) that allows selective passing or blocking of information from the features extractors. This gating mechanism simulates shunting inhibition of real neurons and makes our model more expressive, context dependent and biologically more realistic.  
 
-    | Learning Mode | LOCAL (Bio-Plausible) | GLOBAL (Math-Heavy) |
+| Learning Mode | LOCAL (Bio-Plausible) | GLOBAL (Math-Heavy) |
 |---|---|---|
 | **ERROR-DRIVEN (Goal-Directed)** | Predictive Error Minimization<br>Bio-Approximated Gradients | Global Error Backprop (Baseline) |
 | **ACTIVITY-DRIVEN (Self-Organizing)** | Competitive Self-Organization | Neuromodulated Reinforcement |
