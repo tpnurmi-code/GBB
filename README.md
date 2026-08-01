@@ -15,7 +15,7 @@ The whole architecture is designed to be transparent and therefore function as a
 The architecture employs three distinct components.
 
 ### 1. Feature extractors 
-The first component is a feature extractor layer that has six alternative neural network architectures. These alternative architectures correspond to input to a neural population (afference) and function as alternative hypotheses to be tested to examine which spatial and temporal scales are most relevant for information processing in the sensorimotor cortices.
+The feature-extractor component compares six alternative temporal processing architectures. Spatial interactions between neural populations are subsequently modeled by the FastKAN graph layers.
 
 ### 2. Continuous-time neural-population dynamics 
 The second component corresponds to the internal neural computations and information processing of a neural population and consists of closed-form continuous-time (CfC) neural networks, which model the internal computations of a neural population with interpretable differential equations.
