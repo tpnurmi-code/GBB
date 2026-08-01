@@ -95,7 +95,7 @@ python -m pip install torch
 
 ### 4. Required Python packages
 
-```
+```bash
 python -m pip install \
     numpy \
     scipy \
