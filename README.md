@@ -64,13 +64,15 @@ cd GBB
 ```
 ### 2. Create a virtual environment
 #### Windows PowerShell
-```python -m venv .venv
+```powershell
+python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 ```
 #### Linux or macOS BASH
 
-```python3 -m venv .venv
+```bash
+python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
@@ -108,11 +110,13 @@ python -m pip install mne optuna
 GBB reads the dataset location from the GBB_DATA_DIR environment variable.
 
 #### Windows PowerShell
+'''powershell
 $env:GBB_DATA_DIR = "G:\path\to\your\data"
-
+'''
 #### Linux or macOS
+'''bash
 export GBB_DATA_DIR="/path/to/your/data"
-
+'''
 ### 6. Verify the installation
 Check that the package and its main components can be imported:
 
