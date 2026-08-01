@@ -62,21 +62,42 @@ basic imports, testing, or small development runs.
 git clone https://github.com/tpnurmi-code/GBB.git
 cd GBB
 ```
-### 2. Required Python packages
-1. numpy
-2. scipy
-3. torch
-4. nibabel
-5. nilearn
-6. pandas
-7. matplotlib
-8.seaborn
-9. h5py
-10. tqdm
-11. tensorboard
-12. mne
-13. optuna (optional for distributed computing)
+### 2. Create a virtual environment
+#### Windows PowerShell
+'''python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install --upgrade pip
+'''
+#### Linux or macOS BASH
+'''python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+'''
+### 3. Install PyTorch
+PyTorch builds differ between CPU, NVIDIA CUDA, and AMD ROCm systems.
+Select the installation command appropriate for your operating system and
+hardware from the official PyTorch installation selector.
 
+For a basic CPU installation:
+
+'''python -m pip install torch'''
+
+### 4. Required Python packages
+'''python -m pip install \
+    numpy \
+    scipy \
+    nibabel \
+    nilearn \
+    pandas \
+    matplotlib \
+    seaborn \
+    h5py \
+    tqdm \
+    tensorboard
+'''
+
+### 5. Optional dependencies:
+'''python -m pip install mne optuna'''
 
 ## Future plans (Phase II)
 After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. This phase will explore novel learning and training rules, algorithms and strategies. 
