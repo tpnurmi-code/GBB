@@ -1,0 +1,185 @@
+[build-system]
+requires = [
+    "setuptools>=77",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "glass-box-brain"
+version = "0.1.0"
+description = "An interpretable NeuroAI framework for mechanistic modelling of fMRI data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+
+authors = [
+    { name = "Timo Nurmi" },
+]
+
+keywords = [
+    "neuroimaging",
+    "fmri",
+    "neuroai",
+    "computational-neuroscience",
+    "interpretable-ai",
+    "pytorch",
+    "continuous-time-neural-networks",
+    "kolmogorov-arnold-networks",
+    "brain-connectivity",
+]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+
+dependencies = [
+    "numpy>=1.24,<3",
+    "scipy>=1.10,<2",
+    "torch>=2.2,<3",
+    "nibabel>=5.1,<6",
+    "nilearn>=0.11,<0.14",
+    "pandas>=2.0,<4",
+    "matplotlib>=3.7,<4",
+    "seaborn>=0.13,<1",
+    "h5py>=3.9,<4",
+    "tqdm>=4.66,<5",
+    "tensorboard>=2.14,<3",
+]
+
+
+[project.optional-dependencies]
+visualization = [
+    "mne>=1.6",
+]
+
+optimization = [
+    "optuna>=3.6",
+]
+
+dev = [
+    "pytest>=8",
+    "pytest-cov>=5",
+    "ruff>=0.6",
+    "build>=1.2",
+    "twine>=5",
+    "pre-commit>=3.7",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/tpnurmi-code/GBB"
+Repository = "https://github.com/tpnurmi-code/GBB"
+Issues = "https://github.com/tpnurmi-code/GBB/issues"
+
+
+[project.scripts]
+gbb-train = "gbb.training.train:main"
+
+
+# ---------------------------------------------------------------------------
+# Setuptools package discovery
+#
+# This block assumes:
+#
+# repository/
+# ├── pyproject.toml
+# └── gbb/
+#     ├── __init__.py
+#     └── ...
+# ---------------------------------------------------------------------------
+
+[tool.setuptools]
+include-package-data = true
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "gbb",
+    "gbb.*",
+]
+exclude = [
+    "tests",
+    "tests.*",
+]
+
+
+# ---------------------------------------------------------------------------
+# Pytest
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = "-ra --strict-config --strict-markers"
+
+markers = [
+    "slow: marks relatively slow synthetic model tests",
+    "integration: marks tests involving multiple GBB components",
+]
+
+
+# ---------------------------------------------------------------------------
+# Ruff
+#
+# Start with high-value checks that are unlikely to create hundreds of
+# stylistic failures in a research prototype. More rules can be enabled later.
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+extend-exclude = [
+    ".git",
+    ".venv",
+    "build",
+    "dist",
+    "results",
+    "outputs",
+    "checkpoints",
+]
+
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "I",
+]
+
+
+[tool.ruff.lint.isort]
+known-first-party = ["gbb"]
+
+
+# ---------------------------------------------------------------------------
+# Coverage
+# ---------------------------------------------------------------------------
+
+[tool.coverage.run]
+branch = true
+source = ["gbb"]
+
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
