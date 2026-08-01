@@ -43,6 +43,40 @@ A central principle of the project is that interpretability must be earned empir
 The current GBB implementation is a prototype developed in Python and PyTorch. It is intended as an experimental research framework for interpretable neuroimaging and biologically inspired machine learning. Refractoring of the code is in progress as it contains many files that are too long.
 
 The document below describes the project, its scope, validation strategy, and future development plans: [GBB project research plan](https://github.com/user-attachments/files/29357478/GBB_project_research_plan.pdf) and [GBB project phase graph] (https://github.com/tpnurmi-code/GBB/blob/main/project_phases.pdf) 
+## Installation
+
+### Requirements
+
+- Python 3.10 or newer
+- Git
+- `pip`
+- PyTorch-compatible CPU, NVIDIA CUDA, or AMD ROCm environment
+
+The project has been developed primarily with Python and PyTorch. GPU
+acceleration is recommended for full model training but is not required for
+basic imports, testing, or small development runs.
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/tpnurmi-code/GBB.git
+cd GBB
+
+### 2. Required Python packages
+1. numpy
+2. scipy
+3. torch
+4. nibabel
+5. nilearn
+6. pandas
+7. matplotlib
+8.seaborn
+9. h5py
+10. tqdm
+11. tensorboard
+12. mne
+13. optuna (optional for distributed computing)
+
 
 ## Future plans (Phase II)
 After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. This phase will explore novel learning and training rules, algorithms and strategies. 
@@ -67,19 +101,3 @@ Lastly, we will try an advanced “dendritic” architecture where we will encom
 |---|---|---|
 | **ERROR-DRIVEN (Goal-Directed)** | Predictive Error Minimization<br>Bio-Approximated Gradients | Global Error Backprop (Baseline) |
 | **ACTIVITY-DRIVEN (Self-Organizing)** | Competitive Self-Organization | Neuromodulated Reinforcement |
-
-## Installation
-### Required Python packages
-1. numpy
-2. scipy
-3. torch
-4. nibabel
-5. nilearn
-6. pandas
-7. matplotlib
-8.seaborn
-9. h5py
-10. tqdm
-11. tensorboard
-12. mne
-13. optuna (optional for distributed computing)
