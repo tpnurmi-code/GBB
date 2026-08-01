@@ -83,7 +83,9 @@ hardware from the official PyTorch installation selector.
 
 For a basic CPU installation:
 
-```python -m pip install torch```
+```bash
+python -m pip install torch
+```
 
 ### 4. Required Python packages
 
@@ -102,7 +104,7 @@ python -m pip install \
 ```
 
 ### 5. Optional dependencies:
-```
+```bash
 python -m pip install mne optuna
 ```
 ### 6. Configure the data directory
