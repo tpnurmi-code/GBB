@@ -1,0 +1,7 @@
+# Install GBB in editable mode with all optional research features and
+# development tools.
+#
+# Runtime and optional dependency definitions are maintained in
+# pyproject.toml.
+
+-e .[visualization,optimization,dev]
