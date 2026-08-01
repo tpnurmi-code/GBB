@@ -103,6 +103,33 @@ python -m pip install \
 ```
 python -m pip install mne optuna
 ```
+### 6. Configure the data directory
+
+GBB reads the dataset location from the GBB_DATA_DIR environment variable.
+
+#### Windows PowerShell
+$env:GBB_DATA_DIR = "G:\path\to\your\data"
+
+#### Linux or macOS
+export GBB_DATA_DIR="/path/to/your/data"
+
+### 6. Verify the installation
+Check that the package and its main components can be imported:
+
+```
+python -c "import gbb; print('GBB import successful')"
+python -c "from gbb.data.dataset import NiftiLaminarDataset; print('Dataset import successful')"
+python -c "from gbb.models.mesocort_gbb import MesocortGBB; print('Model import successful')"
+```
+
+Check the installed PyTorch environment:
+```
+python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
+```
+### 7. Start training
+```
+python -m gbb.training.train
+```
 
 ## Future plans (Phase II)
 After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. This phase will explore novel learning and training rules, algorithms and strategies. 
