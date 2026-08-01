@@ -67,11 +67,13 @@ cd GBB
 ```
 ### 2. Create a virtual environment
 #### Windows PowerShell
+
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 ```
+
 #### Linux or macOS BASH
 
 ```bash
@@ -79,6 +81,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
+
 ### 3. Install PyTorch
 PyTorch builds differ between CPU, NVIDIA CUDA, and AMD ROCm systems.
 Select the installation command appropriate for your operating system and
@@ -122,7 +125,7 @@ $env:GBB_DATA_DIR = "G:\path\to\your\data"
 '''bash
 export GBB_DATA_DIR="/path/to/your/data"
 '''
-### 6. Verify the installation
+### 7. Verify the installation
 Check that the package and its main components can be imported:
 
 ```bash
@@ -135,7 +138,7 @@ Check the installed PyTorch environment:
 ```bash
 python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
 ```
-### 7. Start training
+### 8. Start training
 ```bash
 python -m gbb.training.train
 ```
