@@ -61,7 +61,7 @@ basic imports, testing, or small development runs.
 ```bash
 git clone https://github.com/tpnurmi-code/GBB.git
 cd GBB
-
+```
 ### 2. Required Python packages
 1. numpy
 2. scipy
