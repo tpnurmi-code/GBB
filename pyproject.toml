@@ -101,11 +101,12 @@ gbb-train = "gbb.training.train:main"
 # ---------------------------------------------------------------------------
 
 [tool.setuptools]
+package-dir = { "" = "src" }
 include-package-data = true
 
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = [
     "gbb",
     "gbb.*",
