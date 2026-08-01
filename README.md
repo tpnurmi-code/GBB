@@ -64,15 +64,15 @@ cd GBB
 ```
 ### 2. Create a virtual environment
 #### Windows PowerShell
-'''python -m venv .venv
+```python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
-'''
+```
 #### Linux or macOS BASH
-'''python3 -m venv .venv
+```python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-'''
+```
 ### 3. Install PyTorch
 PyTorch builds differ between CPU, NVIDIA CUDA, and AMD ROCm systems.
 Select the installation command appropriate for your operating system and
@@ -83,7 +83,7 @@ For a basic CPU installation:
 '''python -m pip install torch'''
 
 ### 4. Required Python packages
-'''python -m pip install \
+```python -m pip install \
     numpy \
     scipy \
     nibabel \
@@ -94,7 +94,7 @@ For a basic CPU installation:
     h5py \
     tqdm \
     tensorboard
-'''
+```
 
 ### 5. Optional dependencies:
 '''python -m pip install mne optuna'''
