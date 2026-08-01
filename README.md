@@ -85,7 +85,8 @@ For a basic CPU installation:
 
 ### 4. Required Python packages
 
-```python -m pip install \
+```
+python -m pip install \
     numpy \
     scipy \
     nibabel \
