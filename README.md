@@ -100,7 +100,9 @@ python -m pip install \
 ```
 
 ### 5. Optional dependencies:
-'''python -m pip install mne optuna'''
+```
+python -m pip install mne optuna
+```
 
 ## Future plans (Phase II)
 After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. This phase will explore novel learning and training rules, algorithms and strategies. 
