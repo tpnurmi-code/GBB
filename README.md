@@ -69,6 +69,7 @@ cd GBB
 python -m pip install --upgrade pip
 ```
 #### Linux or macOS BASH
+
 ```python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
@@ -80,9 +81,10 @@ hardware from the official PyTorch installation selector.
 
 For a basic CPU installation:
 
-'''python -m pip install torch'''
+```python -m pip install torch```
 
 ### 4. Required Python packages
+
 ```python -m pip install \
     numpy \
     scipy \
