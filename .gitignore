@@ -1,0 +1,134 @@
+# ============================================================
+# Python-generated files
+# ============================================================
+
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+
+# Package/build output
+build/
+dist/
+*.egg-info/
+
+# ============================================================
+# Virtual environments
+# ============================================================
+
+.venv/
+venv/
+env/
+
+# ============================================================
+# Testing and development tools
+# ============================================================
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ============================================================
+# Editors and operating systems
+# ============================================================
+
+.vscode/
+.idea/
+.spyproject/
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ============================================================
+# Local settings and secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+
+config.local.py
+local_config.py
+gbb/config/local.py
+
+# ============================================================
+# Private/local neuroimaging data
+# ============================================================
+
+data/
+datasets/
+
+# Participant-level neuroimaging files stored outside data/
+sub-*/
+subject-*/
+participant-*/
+
+# ============================================================
+# Training outputs
+# ============================================================
+
+results/
+outputs/
+runs/
+logs/
+checkpoints/
+artifacts/
+tensorboard/
+
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+
+events.out.tfevents.*
+
+# ============================================================
+# Generated numerical and visualization outputs
+# ============================================================
+
+*.h5
+*.hdf5
+
+figures/generated/
+reports/generated/
+exports/
+
+# ============================================================
+# Hyperparameter optimization
+# ============================================================
+
+optuna.db
+*.sqlite
+*.sqlite3
+optuna_results/
+
+# ============================================================
+# Cluster and SLURM outputs
+# ============================================================
+
+slurm-*.out
+slurm-*.err
+job_logs/
+
+# ============================================================
+# Temporary and backup files
+# ============================================================
+
+tmp/
+temp/
+.cache/
+
+*.tmp
+*.bak
+*.old
+*.orig
+
+# Local archives
+*.zip
+*.tar
+*.tar.gz
+*.7z
