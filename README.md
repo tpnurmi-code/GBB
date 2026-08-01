@@ -6,10 +6,10 @@ The Glass-Box Brain (GBB) project lies at the intersection of neuroscience/neuro
 GBB aims at learning novel relationships and mechanisms from 7T-CBV-fMRI neuroimaging data not obtainable otherwise.
 
 ### 2. Biologically inspired machine learning 
-Since the brain is incredibly an energy-efficient organ, the GBB project's goal is to develop novel architectural structures and learning algorithms to make future machine learning architectures more energy-efficient and better at learning patterns from few examples instead of thousands.
+Since the brain is an incredibly energy-efficient organ, the GBB project's goal is to develop novel architectural structures and learning algorithms to make future machine learning architectures more energy-efficient and better at learning patterns from few examples instead of thousands.
 
 ### 3. Transparent model design 
-The the whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.
+The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.
 ## Architecture
 
 The architecture employs three distinct components.
@@ -28,19 +28,22 @@ The third component corresponds to connectivity between different neural populat
 After training, the GBB model can export spatial parameter maps projected onto a group-brain template. These maps may include candidate measures of local timescale, connectivity strength, interaction complexity, tuning specificity, or other interpretable model-derived quantities.
 
 The purpose of these maps is not to claim direct access to hidden neural mechanisms, but to generate biologically testable hypotheses from indirect neuroimaging data.
-Validation philosophy
 
-A central principle of the project is that interpretability must be earned empirically. A model-derived parameter map is treated as mechanistically informative only if it demonstrates:
+## Validation philosophy
 
-    predictive validity on held-out data;
-    stability across random seeds, subjects, and datasets;
-    robustness to ablation and model-comparison tests;
-    recovery of known parameters in synthetic-data experiments;
-    biological anchoring against independent sensorimotor, laminar, or multimodal evidence.
+A central principle of the project is that interpretability must be earned
+empirically. A model-derived parameter map is treated as mechanistically
+informative only if it demonstrates:
+
+- predictive validity on held-out data;
+- stability across random seeds, participants, and datasets;
+- robustness to ablation and model-comparison tests;
+- recovery of known parameters in synthetic-data experiments; and
+- biological anchoring against independent sensorimotor, laminar, or multimodal evidence.
 
 ## Current status
 
-The current GBB implementation is a prototype developed in Python and PyTorch. It is intended as an experimental research framework for interpretable neuroimaging and biologically inspired machine learning. Refractoring of the code is in progress as it contains many files that are too long.
+The current GBB implementation is a research prototype developed in Python and PyTorch. The codebase has been reorganized into modular data, model, training, analysis, and visualization packages. Validation and reproducibility infrastructure remain under active development.
 
 The document below describes the project, its scope, validation strategy, and future development plans: [GBB project research plan](https://github.com/user-attachments/files/29357478/GBB_project_research_plan.pdf) and [GBB project phase graph] (https://github.com/tpnurmi-code/GBB/blob/main/project_phases.pdf) 
 ## Installation
