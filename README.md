@@ -144,7 +144,7 @@ python -m gbb.training.train
 ```
 
 ## Future plans (Phase II)
-After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. This phase will explore novel learning and training rules, algorithms and strategies. 
+After an accurate, stable and biologically plausible baseline model, the GBB will proceed to phase II. The stable baseline model will then act as a test bench where various modifications to the model and its algorithms will demonstrate which of those modifications will produce the most significant results. One aim of the transparent model design is to be able to tell exactly which modifications produced which effects. This phase will explore novel learning and training rules, algorithms and strategies. 
 
 The GBB architecture is intended to be developed from an autoregressive to a purely generative model by gradually reducing and eventually disabling the input from the fMRI-timeseries to the model during the training process. Thus, when training the generative model, the training will begin as a autoregressive model that tries to predict the future values of the fMRI time-series based on previous values of the fMRI-timeseries and stimuli. The strength of the fMRI-timeseries input signal is then gradually degraded and finally removed, leaving only the input signal from the stimuli. The fMRI time-series is then only used to calculate the prediction error. This approach and move from autoregressive to a causal generative model will be challenging but this kind of pressure of trying to predict brain responses from stimulus data might actually reveal precious results as we expect the generative causal GBB to mimic the real brain more genuinely.
 
