@@ -122,18 +122,18 @@ export GBB_DATA_DIR="/path/to/your/data"
 ### 6. Verify the installation
 Check that the package and its main components can be imported:
 
-```
+```bash
 python -c "import gbb; print('GBB import successful')"
 python -c "from gbb.data.dataset import NiftiLaminarDataset; print('Dataset import successful')"
 python -c "from gbb.models.mesocort_gbb import MesocortGBB; print('Model import successful')"
 ```
 
 Check the installed PyTorch environment:
-```
+```bash
 python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
 ```
 ### 7. Start training
-```
+```bash
 python -m gbb.training.train
 ```
 
