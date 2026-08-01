@@ -118,13 +118,13 @@ python -m pip install mne optuna
 GBB reads the dataset location from the GBB_DATA_DIR environment variable.
 
 #### Windows PowerShell
-'''powershell
+```powershell
 $env:GBB_DATA_DIR = "G:\path\to\your\data"
-'''
+```
 #### Linux or macOS
-'''bash
+```bash
 export GBB_DATA_DIR="/path/to/your/data"
-'''
+```
 ### 7. Verify the installation
 Check that the package and its main components can be imported:
 
