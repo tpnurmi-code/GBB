@@ -1,0 +1,7 @@
+# Install the appropriate PyTorch CPU, CUDA, or ROCm build before running
+# this command. See the PyTorch installation selector.
+#
+# The runtime dependencies themselves are declared in pyproject.toml.
+# Editable installation keeps local source-code changes immediately active.
+
+-e .
