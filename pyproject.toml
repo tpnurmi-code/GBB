@@ -101,7 +101,6 @@ gbb-generate-synthetic = "gbb.synthetic.cli:main"
 # ---------------------------------------------------------------------------
 
 [tool.setuptools]
-package-dir = { "" = "src" }
 include-package-data = true
 
 
