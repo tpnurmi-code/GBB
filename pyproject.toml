@@ -86,7 +86,7 @@ Issues = "https://github.com/tpnurmi-code/GBB/issues"
 
 [project.scripts]
 gbb-train = "gbb.training.train:main"
-
+gbb-generate-synthetic = "gbb.synthetic.cli:main"
 
 # ---------------------------------------------------------------------------
 # Setuptools package discovery
