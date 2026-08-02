@@ -23,7 +23,7 @@ from .schemas import (
     TrainingConfig,
 )
 
-DEFAULT_DATA_DIR = Path(r"G:\Projects\AI\data")
+DEFAULT_DATA_DIR = Path(r"data")
 
 
 def make_default_config(data_dir: str | Path | None = None) -> Config:
