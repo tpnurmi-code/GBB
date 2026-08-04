@@ -52,7 +52,7 @@ GBB/
 │   ├── PHASE_II.md
 │   ├── project_phases.pdf
 │   ├── GBB_project_research_plan.pdf
-|
+│   │
 ├── gbb/
 │   ├── __init__.py
 │   │
