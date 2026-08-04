@@ -12,7 +12,9 @@ Since the brain is an incredibly energy-efficient organ, the GBB project's goal 
 The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.
 ## Architecture
 
-The architecture employs three distinct components.
+The architecture employs three distinct components. For more specific description of the file/directory structure, see [the project structure document](https://github.com/tpnurmi-code/GBB/blob/main/docs/GBB_PROJECT_STRUCTURE.md)
+
+## Installation
 
 ### 1. Feature extractors 
 The feature-extractor component compares six alternative temporal processing architectures. Spatial interactions between neural populations are subsequently modeled by the FastKAN graph layers.
