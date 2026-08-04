@@ -1,5 +1,7 @@
 # Glass-Box Brain
 
+[![Tests](https://github.com/tpnurmi-code/GBB/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/tpnurmi-code/GBB/actions/workflows/tests.yml)
+
 The Glass-Box Brain (GBB) project lies at the intersection of neuroscience/neuroimaging and AI. It is designed to utilize neuroimaging datasets as training data. Its main purpose is to employ 7-Tesla cerebral blood volume functional magnetic resonance imaging (7T-CBV-fMRI) data since this method offers improved laminar and mesoscale spatial resolution potentially at the level of cortical columns to determine different relationships between different brain regions and cortical columns. The aims of the GBB project are three-fold.
 
 ### 1. Mechanistic neuroimaging 
