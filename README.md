@@ -240,7 +240,7 @@ $env:GBB_DATA_DIR = "G:\path\to\your\data"
 ```bash
 export GBB_DATA_DIR="/path/to/your/data"
 ```
-### 7. Verify the installation
+### 10. Verify the installation
 Check that the package and its main components can be imported:
 
 ```bash
@@ -254,7 +254,7 @@ Check the installed PyTorch environment:
 python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
 ```
 
-### 10. Start training
+### 11. Start training
 ```bash
 python -m gbb.training.train
 ```
