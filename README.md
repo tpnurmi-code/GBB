@@ -11,6 +11,7 @@ Since the brain is an incredibly energy-efficient organ, the GBB project's goal 
 ### 3. Transparent model design 
 The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.
 
+## Future of the project 
 For the longer-term vision for the project, see the [Phase II documentation](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
 
 ## Architecture
