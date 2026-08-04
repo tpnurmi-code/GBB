@@ -10,6 +10,9 @@ Since the brain is an incredibly energy-efficient organ, the GBB project's goal 
 
 ### 3. Transparent model design 
 The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.
+
+For longer-term vision for the project, see the [Phase II documentation](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
+
 ## Architecture
 
 The architecture employs three distinct components. For more specific description of the file/directory structure, see [the project structure document](https://github.com/tpnurmi-code/GBB/blob/main/docs/GBB_PROJECT_STRUCTURE.md)
@@ -273,5 +276,3 @@ python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA avail
 ```bash
 python -m gbb.training.train
 ```
-### 12. Future of the project
-[Phase II of the project](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
