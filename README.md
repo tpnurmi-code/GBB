@@ -81,11 +81,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
-
 ### 3. Install PyTorch
-PyTorch builds differ between CPU, NVIDIA CUDA, and AMD ROCm systems.
-Select the installation command appropriate for your operating system and
-hardware from the official PyTorch installation selector.
+
+PyTorch builds differ between CPU, NVIDIA CUDA, and AMD ROCm systems. Select
+the installation command appropriate for your operating system and hardware
+from the official PyTorch installation selector.
 
 For a basic CPU installation:
 
@@ -93,25 +93,28 @@ For a basic CPU installation:
 python -m pip install torch
 ```
 
-### 4. Required Python packages
+### 4. Install GBB
+
+Install GBB and its required dependencies:
 
 ```bash
-python -m pip install \
-    numpy \
-    scipy \
-    nibabel \
-    nilearn \
-    pandas \
-    matplotlib \
-    seaborn \
-    h5py \
-    tqdm \
-    tensorboard
+python -m pip install -r requirements.txt
 ```
 
-### 5. Optional dependencies:
+Supported dependency versions are defined in `pyproject.toml`.
+
+### 5. Optional dependencies
+
+For visualization and hyperparameter optimization:
+
 ```bash
-python -m pip install mne optuna
+python -m pip install -e ".[visualization,optimization]"
+```
+
+For development and testing:
+
+```bash
+python -m pip install -r requirements-dev.txt
 ```
 
 ### 6. Generate a privacy-safe synthetic fMRI dataset
