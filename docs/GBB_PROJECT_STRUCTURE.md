@@ -118,8 +118,11 @@ GBB/
 │   └── optimize.py
 │
 └── tests/
-    ├── test_model_forward.py
-    └── test_losses.py
+    ├── test_end_to_end_smoke.py
+    ├── test_synthetic_config.py
+    ├── test_synthetic_export.py
+    ├── test_synthetic_ground_truth.py
+    └── test_synthetic_simulation.py
 ```
 
 ---
@@ -132,6 +135,9 @@ GBB/
 | `pyproject.toml` | Python package and development-tool configuration. Defines project metadata, supported Python version, package discovery, and settings for tools such as Ruff and pytest. |
 | `requirements.txt` | Runtime dependencies needed to load data, train models, export neuroimaging results, and create figures. |
 | `requirements-dev.txt` | Development-only dependencies for testing, linting, formatting, and static checks. |
+| `LICENSE` |Apache 2.0 Licence |
+| `NOTICE` | Required notifications |
+
 
 ## `gbb/` — installable Python package
 
