@@ -43,7 +43,6 @@ from gbb.training.validation import validate
 from gbb.visualization.timeseries import visualize_prediction_dynamics
 
 
-
 def _split_runs_by_subject(
     all_runs: list[dict[str, Any]],
     train_fraction: float,

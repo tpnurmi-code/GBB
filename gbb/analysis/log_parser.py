@@ -8,7 +8,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 BATCH_RE = re.compile(

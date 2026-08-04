@@ -8,7 +8,6 @@ from pathlib import Path
 from .defaults import DEFAULT_CONFIG, make_default_config
 from .schemas import Config
 
-
 cfg = DEFAULT_CONFIG
 
 

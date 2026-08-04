@@ -50,7 +50,7 @@ def build_synthetic_anatomy(config: SyntheticFMRIConfig) -> SyntheticAnatomy:
     config.validate()
     rng = np.random.default_rng(config.seed)
     layer_names = tuple(config.cortical_layers)
-    nodes_per_column = len(layer_names)
+    #nodes_per_column = len(layer_names)
 
     coords: list[list[float]] = []
     hierarchy: list[float] = []
@@ -89,7 +89,7 @@ def build_synthetic_anatomy(config: SyntheticFMRIConfig) -> SyntheticAnatomy:
             # large enough to create distinct labelled parcels in the toy atlas.
             radial_offset = (li - np.mean(list(config.layer_order.values()))) * 2.4
             layer_coord = [x, y, z + radial_offset]
-            node_index = len(coords)
+            #node_index = len(coords)
             coords.append(layer_coord)
             hierarchy.append(float(np.clip(base_hierarchy + 0.025 * (li - 1), 0.0, 1.0)))
             spatial_gradient.append(float((y + 25.0) / 44.0))

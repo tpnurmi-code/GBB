@@ -1,9 +1,5 @@
 from pathlib import Path
 
-import pytest
-
-nibabel = pytest.importorskip("nibabel")
-
 from gbb.synthetic import MechanisticSyntheticFMRI, SyntheticFMRIConfig
 
 
