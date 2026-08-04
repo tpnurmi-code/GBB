@@ -273,5 +273,5 @@ python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA avail
 ```bash
 python -m gbb.training.train
 ```
-### Future of the project
-[Phase II of the project](https://github.com/tpnurmi-code/GBB/blob/main/docs/PhaseII.MD)
+### 12. Future of the project
+[Phase II of the project](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
