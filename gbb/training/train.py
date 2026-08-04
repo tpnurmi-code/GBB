@@ -33,10 +33,15 @@ from gbb.data.dataset import NiftiLaminarDataset
 from gbb.data.files import get_subject_files
 from gbb.models.factory import build_model
 from gbb.training.checkpointing import save_checkpoint
-from gbb.training.distributed import cleanup_distributed, set_seed, setup_distributed
+from gbb.training.distributed import (
+    cleanup_distributed,
+    set_seed,
+    setup_distributed,
+)
 from gbb.training.loop import train_one_epoch
 from gbb.training.validation import validate
 from gbb.visualization.timeseries import visualize_prediction_dynamics
+
 
 
 def _split_runs_by_subject(
