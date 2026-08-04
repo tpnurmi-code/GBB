@@ -83,14 +83,26 @@ python -m pip install --upgrade pip
 ```
 ### 3. Install PyTorch
 
-PyTorch builds differ between CPU, NVIDIA CUDA, and AMD ROCm systems. Select
-the installation command appropriate for your operating system and hardware
-from the official PyTorch installation selector.
+A CUDA- or ROCm-capable GPU is strongly recommended for practical training. 
+CPU-only execution is intended primarily for tests, debugging, and very small demonstrations.
 
-For a basic CPU installation:
+Install the PyTorch build appropriate for your operating system and hardware
+using the official PyTorch installation selector:
+
+- NVIDIA GPU: install a CUDA-enabled build.
+- AMD GPU: install a ROCm-enabled build where supported.
+- CPU-only: suitable mainly for installation checks, tests, and small smoke runs.
+
+A basic CPU installation is:
 
 ```bash
 python -m pip install torch
+```
+
+Verify that PyTorch can access the accelerator:
+
+```bash
+python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
 ```
 
 ### 4. Install GBB
