@@ -47,6 +47,11 @@ GBB/
 ├── requirements.txt
 ├── requirements-dev.txt
 │
+├── docs/
+│   ├── GBB_PROJECT_STRUCTURE.md 
+│   ├── PHASE_II.md
+│   ├── project_phases.pdf
+│   ├── GBB_project_research_plan.pdf
 ├── gbb/
 │   ├── __init__.py
 │   │
