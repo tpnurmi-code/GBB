@@ -137,6 +137,8 @@ GBB/
 | `requirements-dev.txt` | Development-only dependencies for testing, linting, formatting, and static checks. |
 | `LICENSE` |Apache 2.0 Licence |
 | `NOTICE` | Required notifications |
+| `CITATION.cff` | Citing the GBB project |
+
 
 
 ## `gbb/` — installable Python package
