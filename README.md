@@ -113,7 +113,122 @@ python -m pip install \
 ```bash
 python -m pip install mne optuna
 ```
-### 6. Configure the data directory
+
+### 6. Generate a privacy-safe synthetic fMRI dataset
+
+Users without access to the original neuroimaging data can generate a
+GBB-compatible synthetic dataset with known mechanistic ground truth.
+
+The quick preset creates a small two-subject, one-run dataset suitable for
+testing installation, NIfTI loading, model construction, and the training
+pipeline.
+
+```bash
+gbb-generate-synthetic \
+    --quick \
+    --output synthetic_gbb_quick \
+    --response bold \
+    --overwrite
+```
+
+The equivalent Python module command is:
+
+```bash
+python -m gbb.synthetic.cli \
+    --quick \
+    --output synthetic_gbb_quick \
+    --response bold \
+    --overwrite
+```
+
+For a CBV-like synthetic dataset:
+
+```bash
+gbb-generate-synthetic \
+    --quick \
+    --output synthetic_gbb_cbv \
+    --response cbv \
+    --overwrite
+```
+
+A larger custom CBV-like dataset can be generated with:
+
+```bash
+gbb-generate-synthetic \
+    --output synthetic_gbb_cbv \
+    --subjects 6 \
+    --runs 2 \
+    --columns 16 \
+    --timepoints 200 \
+    --response cbv \
+    --overwrite
+```
+
+The generator creates synthetic NIfTI runs, region and cortical-column masks,
+stimulus files, event tables, and files containing the known mechanistic ground
+truth. The generated data contain no participant data.
+
+### 7. Select the generated dataset
+
+GBB reads the dataset location from the `GBB_DATA_DIR` environment variable.
+Set it before importing or starting GBB.
+
+#### Windows PowerShell
+
+```powershell
+$env:GBB_DATA_DIR = (Resolve-Path ".\synthetic_gbb_quick").Path
+```
+
+For the CBV example:
+
+```powershell
+$env:GBB_DATA_DIR = (Resolve-Path ".\synthetic_gbb_cbv").Path
+```
+
+#### Linux or macOS
+
+```bash
+export GBB_DATA_DIR="$(pwd)/synthetic_gbb_quick"
+```
+
+For the CBV example:
+
+```bash
+export GBB_DATA_DIR="$(pwd)/synthetic_gbb_cbv"
+```
+
+### 8. Verify the generated dataset
+
+#### Windows PowerShell
+
+```powershell
+Get-ChildItem synthetic_gbb_quick
+Get-ChildItem synthetic_gbb_quick\synthetic_subject_001\NifTi
+```
+
+#### Linux or macOS
+
+```bash
+find synthetic_gbb_quick -maxdepth 3 -type f | head -30
+```
+
+The generated directory should contain files such as:
+
+```text
+synthetic_gbb_quick/
+├── group_roi_mask.nii
+├── group_roi_mask_10.nii
+├── cortical_columns_7T.nii
+├── ground_truth/
+└── synthetic_subject_001/
+    └── NifTi/
+        ├── rfunctional_run1.nii.gz
+        ├── rfunctional_run1_events.tsv
+        ├── rfunctional_run1_stim.mat
+        └── rfunctional_run1_ground_truth.npz
+```
+
+### 9. Configure the data directory
 
 GBB reads the dataset location from the GBB_DATA_DIR environment variable.
 
@@ -138,7 +253,8 @@ Check the installed PyTorch environment:
 ```bash
 python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
 ```
-### 8. Start training
+
+### 10. Start training
 ```bash
 python -m gbb.training.train
 ```
