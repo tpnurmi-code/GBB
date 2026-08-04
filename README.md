@@ -45,7 +45,7 @@ informative only if it demonstrates:
 
 The current GBB implementation is a research prototype developed in Python and PyTorch. The codebase has been reorganized into modular data, model, training, analysis, and visualization packages. Validation and reproducibility infrastructure remain under active development.
 
-The document below describes the project, its scope, validation strategy, and future development plans: [GBB project research plan](https://github.com/user-attachments/files/29357478/GBB_project_research_plan.pdf) and [GBB project phase graph](https://github.com/tpnurmi-code/GBB/blob/main/project_phases.pdf)
+The document below describes the project, its scope, validation strategy, and future development plans: [GBB project research plan](https://github.com/user-attachments/files/29357478/GBB_project_research_plan.pdf) and [GBB project phase graph](https://github.com/tpnurmi-code/GBB/blob/main/docs/project_phases.pdf)
 ## Installation
 
 ### Requirements
