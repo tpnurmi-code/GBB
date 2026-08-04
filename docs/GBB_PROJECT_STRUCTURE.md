@@ -53,6 +53,9 @@ GBB/
 │   ├── project_phases.pdf
 │   ├── GBB_project_research_plan.pdf
 │   │
+├── examples/
+│   ├── generate_custom_synthetic.py
+│   │
 ├── gbb/
 │   ├── __init__.py
 │   │
