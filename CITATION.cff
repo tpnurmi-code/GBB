@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use Glass-Box Brain in research, please cite the software using the metadata below."
+title: "Glass-Box Brain"
+type: software
+
+authors:
+  - family-names: "Nurmi"
+    given-names: "Timo"
+
+version: "0.1.0"
+date-released: 2026-08-04
+
+repository-code: "https://github.com/tpnurmi-code/GBB"
+url: "https://github.com/tpnurmi-code/GBB"
+
+license: Apache-2.0
+
+keywords:
+  - neuroimaging
+  - fMRI
+  - NeuroAI
+  - computational neuroscience
+  - interpretable artificial intelligence
+  - synthetic fMRI
+  - continuous-time neural networks
+  - Kolmogorov-Arnold networks
+
+orcid: "https://orcid.org/0000-0003-2020-7757"
