@@ -58,7 +58,7 @@ gbb/config/local.py
 # Private/local neuroimaging data
 # ============================================================
 
-data/
+/data/
 datasets/
 
 # Participant-level neuroimaging files stored outside data/

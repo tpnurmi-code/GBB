@@ -35,7 +35,9 @@ class MesocortGBB(nn.Module):
         model_type: str | None = None,
         hidden_dim: int | None = None,
         use_hemodynamic_head: bool | None = None,
+        allow_all_nodes: bool = False,
     ) -> None:
+
         super().__init__()
         if num_nodes <= 0 or time_points <= 0:
             raise ValueError("num_nodes and time_points must be positive")
@@ -44,7 +46,17 @@ class MesocortGBB(nn.Module):
         self.time_points = int(time_points)
         self.model_type = str(model_type or config.MODEL_TYPE).upper()
         self.freeze_extractor = bool(freeze_extractor)
-        self.use_hemodynamic_head = (
+                self.stimulus_mode = str(config.STIMULUS_MODE).upper()
+
+        if self.stimulus_mode not in {"EVENTS", "DENSE", "NONE"}:
+            raise ValueError(
+                f"Unknown STIMULUS_MODE: {self.stimulus_mode}"
+            )
+
+        self.stimulus_enabled = self.stimulus_mode != "NONE"
+        self.allow_all_nodes = bool(allow_all_nodes)
+
+	self.use_hemodynamic_head = (
             bool(config.USE_HEMODYNAMIC_HEAD)
             if use_hemodynamic_head is None
             else bool(use_hemodynamic_head)
@@ -93,13 +105,73 @@ class MesocortGBB(nn.Module):
         )
 
         if sensory_mask is None:
-            sensory_mask = torch.ones(self.num_nodes, 1, dtype=torch.float32)
-        sensory_mask = torch.as_tensor(sensory_mask, dtype=torch.float32)
+            if not self.stimulus_enabled:
+                sensory_mask = torch.zeros(
+                    self.num_nodes,
+                    1,
+                    dtype=torch.float32,
+                )
+            elif self.allow_all_nodes:
+                sensory_mask = torch.ones(
+                    self.num_nodes,
+                    1,
+                    dtype=torch.float32,
+                )
+            else:
+                raise ValueError(
+                    "sensory_mask is required when stimulus input is enabled. "
+                    "Set allow_all_nodes=True only for an intentional "
+                    "whole-network ablation."
+                )
+
+        sensory_mask = torch.as_tensor(
+            sensory_mask,
+            dtype=torch.float32,
+        ).reshape(-1)
+
         if sensory_mask.numel() != self.num_nodes:
             raise ValueError(
-                f"sensory_mask contains {sensory_mask.numel()} values; expected {self.num_nodes}"
+                f"sensory_mask contains {sensory_mask.numel()} values; "
+                f"expected {self.num_nodes}"
             )
-        self.register_buffer("sensory_mask", sensory_mask.reshape(self.num_nodes, 1))
+
+        if not torch.isfinite(sensory_mask).all():
+            raise ValueError(
+                "sensory_mask contains non-finite values"
+            )
+
+        if not torch.all(
+            (sensory_mask == 0) | (sensory_mask == 1)
+        ):
+            raise ValueError(
+                "sensory_mask must be binary (0 or 1)"
+            )
+
+        selected_nodes = int(sensory_mask.sum().item())
+
+        if self.stimulus_enabled and selected_nodes == 0:
+            raise ValueError(
+                "sensory_mask selects no nodes while stimulus input is enabled"
+            )
+
+        if not self.stimulus_enabled and selected_nodes != 0:
+            raise ValueError(
+                "STIMULUS_MODE='NONE' requires an empty sensory_mask"
+            )
+
+        if (
+            selected_nodes == self.num_nodes
+            and not self.allow_all_nodes
+        ):
+            raise ValueError(
+                "sensory_mask selects every node. Set allow_all_nodes=True "
+                "only for an intentional whole-network ablation."
+            )
+
+        self.register_buffer(
+            "sensory_mask",
+            sensory_mask.reshape(self.num_nodes, 1),
+        )
         self.last_kan_input: torch.Tensor | None = None
 
     def _build_extractor(self, hidden_dim: int) -> nn.Module:
@@ -170,10 +242,46 @@ class MesocortGBB(nn.Module):
                 f"Expected time/nodes ({self.time_points}, {self.num_nodes}), "
                 f"got ({time_points}, {num_nodes})"
             )
-        if stim_window is not None and stim_window.shape[:2] != (batch_size, time_points):
-            raise ValueError(
-                f"Stimulus must share batch/time axes with fMRI, got {tuple(stim_window.shape)}"
-            )
+        expected_stimulus_shape = (
+            batch_size,
+            time_points,
+            int(config.STIMULUS_INPUT_CHANNELS),
+        )
+
+        if self.stimulus_enabled:
+            if stim_window is None:
+                raise ValueError(
+                    "stim_window is required when "
+                    f"STIMULUS_MODE={self.stimulus_mode!r}"
+                )
+
+            if tuple(stim_window.shape) != expected_stimulus_shape:
+                raise ValueError(
+                    f"Expected stim_window={expected_stimulus_shape}, "
+                    f"got {tuple(stim_window.shape)}"
+                )
+
+            if not torch.isfinite(stim_window).all():
+                raise ValueError(
+                    "stim_window contains non-finite values"
+                )
+
+        else:
+            if self.stimulus_enabled:
+                if tuple(stim_window.shape) != expected_stimulus_shape:
+                    raise ValueError(
+                        "Expected a zero placeholder stimulus with shape "
+                        f"{expected_stimulus_shape}; got "
+                        f"{tuple(stim_window.shape)}"
+                    )
+
+                if torch.count_nonzero(stim_window).item() != 0:
+                    raise ValueError(
+                        "A non-zero stim_window was supplied while "
+                        "STIMULUS_MODE='NONE'"
+                    )
+
+            stim_window = None
 
         per_node_series = fmri_window.permute(0, 2, 1).reshape(
             batch_size * num_nodes, time_points, 1

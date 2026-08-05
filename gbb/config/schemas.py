@@ -6,6 +6,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
+MissingStimulusPolicy = Literal["ERROR", "WARN", "ZEROS"]
+StimulusShapePolicy = Literal["ERROR", "WARN", "COERCE"]
+SensorySelectionPolicy = Literal["STRICT", "WARN", "FALLBACK"]
+ColumnarMaskPolicy = Literal["ERROR", "REGION_FALLBACK"]
+
 ModelType = Literal["H1", "H2", "H3", "H4", "H5", "H6"]
 StimulusMode = Literal["EVENTS", "DENSE", "NONE"]
 StimulusInjectionMode = Literal[
@@ -42,10 +47,12 @@ class MaskerConfig:
     detrend: bool = False
     low_pass: float | None = None
     high_pass: float | None = None
+    columnar_mask_policy: ColumnarMaskPolicy = "ERROR"
 
 
 @dataclass
 class StimulusConfig:
+    
     mode: StimulusMode = "DENSE"
     injection_mode: StimulusInjectionMode = "COORDS_REGION_INTERSECTION"
     sensory_regions: list[str] = field(
@@ -62,7 +69,15 @@ class StimulusConfig:
     dense_stimulus_ext: str = "_stim.mat"
     input_channels: int = 1
     raw_sampling_rate: float = 500.0
+    dense_stimulus_key: str | None = "stimulus"
+    required_trial_type: str | None = "hand_movement"
 
+    missing_stimulus_policy: MissingStimulusPolicy = "ERROR"
+    stimulus_shape_policy: StimulusShapePolicy = "ERROR"
+    sensory_selection_policy: SensorySelectionPolicy = "STRICT"
+
+    require_nonzero_stimulus: bool = True
+    allow_all_nodes_stimulus: bool = False
 
 @dataclass
 class HemodynamicConfig:

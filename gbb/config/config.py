@@ -27,6 +27,17 @@ COLUMNAR_MASK_FILE = str(cfg.paths.columnar_mask_file)
 DETREND = cfg.masker.detrend
 LOW_PASS = cfg.masker.low_pass
 HIGH_PASS = cfg.masker.high_pass
+COLUMNAR_MASK_POLICY = cfg.masker.columnar_mask_policy
+
+DENSE_STIMULUS_KEY = cfg.stimulus.dense_stimulus_key
+REQUIRED_TRIAL_TYPE = cfg.stimulus.required_trial_type
+
+MISSING_STIMULUS_POLICY = cfg.stimulus.missing_stimulus_policy
+STIMULUS_SHAPE_POLICY = cfg.stimulus.stimulus_shape_policy
+SENSORY_SELECTION_POLICY = cfg.stimulus.sensory_selection_policy
+
+REQUIRE_NONZERO_STIMULUS = cfg.stimulus.require_nonzero_stimulus
+ALLOW_ALL_NODES_STIMULUS = cfg.stimulus.allow_all_nodes_stimulus
 
 STIMULUS_MODE = cfg.stimulus.mode
 STIMULUS_INJECTION_MODE = cfg.stimulus.injection_mode

@@ -111,3 +111,72 @@ def get_voxel_coords_from_mask(mask_path, num_expected: int | None = None) -> np
             )
         coords = coords[:num_expected]
     return np.asarray(coords, dtype=float)
+
+
+def _load_column_ids(self, mask_data: np.ndarray) -> torch.Tensor:
+        policy = str(
+            getattr(config, "COLUMNAR_MASK_POLICY", "ERROR")
+        ).upper()
+
+        if policy not in {"ERROR", "REGION_FALLBACK"}:
+            raise ValueError(
+                "COLUMNAR_MASK_POLICY must be 'ERROR' or "
+                f"'REGION_FALLBACK'; got {policy!r}"
+            )
+
+        columnar_path = Path(str(config.COLUMNAR_MASK_FILE))
+
+        if not columnar_path.is_file():
+            message = f"Columnar mask file not found: {columnar_path}"
+
+            if policy == "REGION_FALLBACK":
+                warnings.warn(
+                    f"{message}. Using region-group IDs instead.",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
+                return self.node_region_ids.clone()
+
+            raise FileNotFoundError(message)
+
+        columnar_img = nib.load(str(columnar_path))
+        columnar_img = resample_to_img(
+            source_img=columnar_img,
+            target_img=self.parcellation_img,
+            interpolation="nearest",
+            force_resample=True,
+            copy_header=True,
+        )
+        columnar_data = np.asarray(columnar_img.get_fdata())
+        column_ids: list[int] = []
+
+        for node_index, region_id in enumerate(self.region_ids):
+            values = columnar_data[mask_data == region_id]
+            values = values[
+                np.isfinite(values) & (values > 0)
+            ].astype(int)
+
+            if not values.size:
+                message = (
+                    "Columnar mask contains no positive column ID for "
+                    f"region ID {int(region_id)}"
+                )
+
+                if policy == "REGION_FALLBACK":
+                    warnings.warn(
+                        f"{message}. Using the node's region-group ID instead.",
+                        RuntimeWarning,
+                        stacklevel=2,
+                    )
+                    column_ids.append(
+                        int(self.node_region_ids[node_index].item())
+                    )
+                    continue
+
+                raise ValueError(message)
+
+            column_ids.append(
+                int(np.bincount(values).argmax())
+            )
+
+        return torch.tensor(column_ids, dtype=torch.long)

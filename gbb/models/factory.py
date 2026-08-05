@@ -78,6 +78,7 @@ def build_model(
     hidden_dim: int | None = None,
     use_hemodynamic_head: bool | None = None,
     freeze_extractor: bool = False,
+    allow_all_nodes: bool = False,
 ) -> MesocortGBB:
     """Build a full model with a signature matching :class:`MesocortGBB`."""
     return MesocortGBB(
@@ -88,4 +89,5 @@ def build_model(
         hidden_dim=hidden_dim,
         use_hemodynamic_head=use_hemodynamic_head,
         freeze_extractor=freeze_extractor,
+        allow_all_nodes=allow_all_nodes,
     )
