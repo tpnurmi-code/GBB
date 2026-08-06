@@ -5,7 +5,9 @@ from __future__ import annotations
 import torch
 
 
-def apply_time_masking(x_batch: torch.Tensor, mask_len: int = 5, mode: str = "independent") -> torch.Tensor:
+def apply_time_masking(
+    x_batch: torch.Tensor, mask_len: int = 5, mode: str = "independent"
+) -> torch.Tensor:
     """Mask contiguous time ranges globally or independently per node."""
     if x_batch.ndim != 3:
         raise ValueError(f"Expected (batch, time, nodes), got {tuple(x_batch.shape)}")
@@ -30,9 +32,7 @@ def apply_time_masking(x_batch: torch.Tensor, mask_len: int = 5, mode: str = "in
             device=x_batch.device,
         )
         time_grid = torch.arange(time_points, device=x_batch.device).view(1, -1, 1)
-        mask = (time_grid >= starts.unsqueeze(1)) & (
-            time_grid < starts.unsqueeze(1) + mask_len
-        )
+        mask = (time_grid >= starts.unsqueeze(1)) & (time_grid < starts.unsqueeze(1) + mask_len)
         masked[mask] = 0.0
     else:
         raise ValueError("mode must be 'global' or 'independent'")

@@ -46,17 +46,16 @@ class MesocortGBB(nn.Module):
         self.time_points = int(time_points)
         self.model_type = str(model_type or config.MODEL_TYPE).upper()
         self.freeze_extractor = bool(freeze_extractor)
-                self.stimulus_mode = str(config.STIMULUS_MODE).upper()
+
+        self.stimulus_mode = str(config.STIMULUS_MODE).upper()
 
         if self.stimulus_mode not in {"EVENTS", "DENSE", "NONE"}:
-            raise ValueError(
-                f"Unknown STIMULUS_MODE: {self.stimulus_mode}"
-            )
+            raise ValueError(f"Unknown STIMULUS_MODE: {self.stimulus_mode}")
 
         self.stimulus_enabled = self.stimulus_mode != "NONE"
         self.allow_all_nodes = bool(allow_all_nodes)
 
-	self.use_hemodynamic_head = (
+        self.use_hemodynamic_head = (
             bool(config.USE_HEMODYNAMIC_HEAD)
             if use_hemodynamic_head is None
             else bool(use_hemodynamic_head)
@@ -131,38 +130,24 @@ class MesocortGBB(nn.Module):
 
         if sensory_mask.numel() != self.num_nodes:
             raise ValueError(
-                f"sensory_mask contains {sensory_mask.numel()} values; "
-                f"expected {self.num_nodes}"
+                f"sensory_mask contains {sensory_mask.numel()} values; expected {self.num_nodes}"
             )
 
         if not torch.isfinite(sensory_mask).all():
-            raise ValueError(
-                "sensory_mask contains non-finite values"
-            )
+            raise ValueError("sensory_mask contains non-finite values")
 
-        if not torch.all(
-            (sensory_mask == 0) | (sensory_mask == 1)
-        ):
-            raise ValueError(
-                "sensory_mask must be binary (0 or 1)"
-            )
+        if not torch.all((sensory_mask == 0) | (sensory_mask == 1)):
+            raise ValueError("sensory_mask must be binary (0 or 1)")
 
         selected_nodes = int(sensory_mask.sum().item())
 
         if self.stimulus_enabled and selected_nodes == 0:
-            raise ValueError(
-                "sensory_mask selects no nodes while stimulus input is enabled"
-            )
+            raise ValueError("sensory_mask selects no nodes while stimulus input is enabled")
 
         if not self.stimulus_enabled and selected_nodes != 0:
-            raise ValueError(
-                "STIMULUS_MODE='NONE' requires an empty sensory_mask"
-            )
+            raise ValueError("STIMULUS_MODE='NONE' requires an empty sensory_mask")
 
-        if (
-            selected_nodes == self.num_nodes
-            and not self.allow_all_nodes
-        ):
+        if selected_nodes == self.num_nodes and not self.allow_all_nodes:
             raise ValueError(
                 "sensory_mask selects every node. Set allow_all_nodes=True "
                 "only for an intentional whole-network ablation."
@@ -251,8 +236,7 @@ class MesocortGBB(nn.Module):
         if self.stimulus_enabled:
             if stim_window is None:
                 raise ValueError(
-                    "stim_window is required when "
-                    f"STIMULUS_MODE={self.stimulus_mode!r}"
+                    f"stim_window is required when STIMULUS_MODE={self.stimulus_mode!r}"
                 )
 
             if tuple(stim_window.shape) != expected_stimulus_shape:
@@ -262,9 +246,7 @@ class MesocortGBB(nn.Module):
                 )
 
             if not torch.isfinite(stim_window).all():
-                raise ValueError(
-                    "stim_window contains non-finite values"
-                )
+                raise ValueError("stim_window contains non-finite values")
 
         else:
             if self.stimulus_enabled:
@@ -277,8 +259,7 @@ class MesocortGBB(nn.Module):
 
                 if torch.count_nonzero(stim_window).item() != 0:
                     raise ValueError(
-                        "A non-zero stim_window was supplied while "
-                        "STIMULUS_MODE='NONE'"
+                        "A non-zero stim_window was supplied while STIMULUS_MODE='NONE'"
                     )
 
             stim_window = None
@@ -319,9 +300,7 @@ class MesocortGBB(nn.Module):
                 neighbor_message, attention_map, head_weights = layer(graph_state, adj)
                 graph_state = graph_state + neighbor_message
                 total_attention = (
-                    attention_map
-                    if total_attention is None
-                    else total_attention + attention_map
+                    attention_map if total_attention is None else total_attention + attention_map
                 )
                 if all_head_weights is not None:
                     all_head_weights.append(head_weights)
@@ -333,18 +312,14 @@ class MesocortGBB(nn.Module):
         if total_attention is None:
             average_attention = None
         else:
-            average_attention = total_attention / (
-                time_points * max(1, len(self.kan_layers))
-            )
+            average_attention = total_attention / (time_points * max(1, len(self.kan_layers)))
 
         hidden = self.norm_decoder(self.dropout(hidden))
         neural_delta = F.hardtanh(self.decoder(hidden), min_val=-4.0, max_val=4.0)
         neural_prediction = fmri_window[:, -1, :, None] + neural_delta
         neural_prediction = neural_prediction.permute(0, 2, 1).contiguous()
         prediction = (
-            self.hemo_head(neural_prediction)
-            if self.use_hemodynamic_head
-            else neural_prediction
+            self.hemo_head(neural_prediction) if self.use_hemodynamic_head else neural_prediction
         )
         return prediction, average_attention, hidden, all_head_weights
 

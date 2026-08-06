@@ -2,38 +2,32 @@
 
 from __future__ import annotations
 
-import os
-import warnings
 from pathlib import Path
 from typing import Iterable
 
-import nibabel as nib
 import numpy as np
-import pandas as pd
-import scipy.io
-import scipy.signal
 import torch
-from nilearn.glm.first_level import compute_regressor
-from nilearn.image import resample_to_img
 from nilearn.maskers import NiftiLabelsMasker
 from scipy.spatial.distance import cdist
-from scipy.stats import zscore
 from torch.utils.data import Dataset
 from tqdm.auto import tqdm
 
-from gbb.config import config
-from gbb.data.hrf import canonical_cbv_response, canonical_hrf_response
+from gbb.config import cfg, config
+from gbb.data.fmri import load_fmri_run
 from gbb.data.masks import (
     compute_centroids,
     get_region_ids,
     get_region_labels,
+    load_column_ids,
     load_mask,
     load_mask_metadata,
 )
+from gbb.data.stimulus import StimulusLoader
+from gbb.data.targeting import make_sensory_mask, select_sensory_indices
 
 
 class NiftiLaminarDataset(Dataset):
-    """Load multiple fMRI runs and expose non-overlapping-boundary windows.
+    """Load multiple fMRI runs and expose run-boundary-safe windows.
 
     Each item is ``(fmri_history, stimulus_history, fmri_future)`` with shapes
     ``(window_size, nodes)``, ``(window_size, channels)``, and
@@ -49,56 +43,16 @@ class NiftiLaminarDataset(Dataset):
         sensory_regions: list[str] | None = None,
     ) -> None:
         super().__init__()
-        self.window_size = int(
-            config.WINDOW_SIZE if window_size is None else window_size
-        )
+
+        self.window_size = int(config.WINDOW_SIZE if window_size is None else window_size)
         self.prediction_horizon = int(config.PREDICTION_HORIZON)
         self.tr = float(config.TR)
         self.is_training = run_type.lower() == "train"
 
-        self.stimulus_mode = self._read_policy(
-            "STIMULUS_MODE",
-            {"EVENTS", "DENSE", "NONE"},
-            default="NONE",
-        )
-        self.missing_stimulus_policy = self._read_policy(
-            "MISSING_STIMULUS_POLICY",
-            {"ERROR", "WARN", "ZEROS"},
-            default="ERROR",
-        )
-        self.stimulus_shape_policy = self._read_policy(
-            "STIMULUS_SHAPE_POLICY",
-            {"ERROR", "WARN", "COERCE"},
-            default="ERROR",
-        )
-        self.sensory_selection_policy = self._read_policy(
-            "SENSORY_SELECTION_POLICY",
-            {"STRICT", "WARN", "FALLBACK"},
-            default="STRICT",
-        )
-
-        self.stimulus_channels = int(config.STIMULUS_INPUT_CHANNELS)
-        self.require_nonzero_stimulus = bool(
-            getattr(config, "REQUIRE_NONZERO_STIMULUS", True)
-        )
-        self.allow_all_nodes_stimulus = bool(
-            getattr(config, "ALLOW_ALL_NODES_STIMULUS", False)
-        )
-        self.required_trial_type = getattr(
-            config,
-            "REQUIRED_TRIAL_TYPE",
-            "hand_movement",
-        )
-        self.dense_stimulus_key = getattr(
-            config,
-            "DENSE_STIMULUS_KEY",
-            "stimulus",
-        )
-
-        if self.stimulus_channels <= 0:
-            raise ValueError("STIMULUS_INPUT_CHANNELS must be positive")
-
-        if self.window_size <= 0 or self.prediction_horizon <= 0:            raise ValueError("window_size and prediction_horizon must be positive")
+        if self.window_size <= 0 or self.prediction_horizon <= 0:
+            raise ValueError("window_size and prediction_horizon must be positive")
+        if self.tr <= 0:
+            raise ValueError("TR must be positive")
 
         self.parcellation_img, mask_data, affine, mask_path = load_mask(mask_img)
         self.mask_path = mask_path
@@ -117,7 +71,6 @@ class NiftiLaminarDataset(Dataset):
         if self.num_nodes == 0:
             raise ValueError("The labelled mask contains no non-zero regions")
 
-	
         metadata = load_mask_metadata(mask_path)
         self.coords = compute_centroids(
             mask_data=mask_data,
@@ -128,21 +81,34 @@ class NiftiLaminarDataset(Dataset):
         self.node_coords = self.coords.copy()
         self.region_labels = get_region_labels(self.region_ids, metadata)
 
-        if self.stimulus_mode == "NONE":
-            self.sensory_indices = []
+        self.stimulus_loader = StimulusLoader(
+            tr=self.tr,
+            settings=cfg.stimulus,
+            use_hemodynamic_head=bool(cfg.hemodynamics.use_head),
+        )
+
+        if self.stimulus_loader.stimulus_mode == "NONE":
+            self.sensory_indices: list[int] = []
         else:
             configured_regions = (
-                list(config.SENSORY_REGIONS)
-                if sensory_regions is None
-                else list(sensory_regions)
+                list(config.SENSORY_REGIONS) if sensory_regions is None else list(sensory_regions)
             )
-            self.sensory_indices = self._select_sensory_indices(
-                configured_regions
+            self.sensory_indices = select_sensory_indices(
+                region_labels=self.region_labels,
+                coordinates=self.coords,
+                sensory_regions=configured_regions,
+                excluded_regions=list(config.EXCLUDED_REGIONS),
+                injection_mode=str(config.STIMULUS_INJECTION_MODE),
+                target_mni=tuple(config.STIMULUS_MNI_COORDS),
+                radius_mm=float(config.STIMULUS_RADIUS_MM),
+                selection_policy=str(config.SENSORY_SELECTION_POLICY),
+                allow_all_nodes=bool(config.ALLOW_ALL_NODES_STIMULUS),
             )
-        
-        sensory_mask_np = np.zeros((self.num_nodes, 1), dtype=np.float32)
-        sensory_mask_np[self.sensory_indices, 0] = 1.0
-        self.sensory_mask = torch.from_numpy(sensory_mask_np)
+
+        self.sensory_mask = make_sensory_mask(
+            num_nodes=self.num_nodes,
+            sensory_indices=self.sensory_indices,
+        )
 
         runs = list(data_list)
         if not runs:
@@ -159,17 +125,36 @@ class NiftiLaminarDataset(Dataset):
             )
 
         distance_matrix = cdist(self.coords, self.coords, metric="euclidean")
-        self.distance_matrix = torch.tensor(distance_matrix, dtype=torch.float32)
-        sigma = float(getattr(config, "ADJACENCY_SIGMA", config.SMOOTHNESS_SIGMA_MM))
+        self.distance_matrix = torch.as_tensor(
+            distance_matrix,
+            dtype=torch.float32,
+        )
+
+        sigma = float(
+            getattr(
+                config,
+                "ADJACENCY_SIGMA",
+                config.SMOOTHNESS_SIGMA_MM,
+            )
+        )
+        if sigma <= 0:
+            raise ValueError("ADJACENCY_SIGMA must be positive")
+
         adjacency = np.exp(-(distance_matrix**2) / (2.0 * sigma**2))
         adjacency[adjacency < 0.01] = 0.0
         np.fill_diagonal(adjacency, 1.0)
-        self.adjacency = torch.tensor(adjacency, dtype=torch.float32)
+        self.adjacency = torch.as_tensor(adjacency, dtype=torch.float32)
 
         self.node_region_ids = self._make_region_group_ids(self.region_labels)
-        self.column_ids = self._load_column_ids(mask_data)
+        self.column_ids = load_column_ids(
+            columnar_mask_path=Path(str(config.COLUMNAR_MASK_FILE)),
+            parcellation_img=self.parcellation_img,
+            mask_data=mask_data,
+            region_ids=self.region_ids,
+            node_region_ids=self.node_region_ids,
+            policy=str(getattr(config, "COLUMNAR_MASK_POLICY", "ERROR")),
+        )
 
-  
     def _load_runs(
         self,
         runs: list[dict[str, str]],
@@ -180,40 +165,20 @@ class NiftiLaminarDataset(Dataset):
 
         iterator = tqdm(runs, desc="Processing runs", leave=False) if len(runs) > 1 else runs
         for item in iterator:
-           fmri_data = load_fmri_run(
-           fmri_path=Path(item["fmri"]),
-           masker=self.masker,
-           parcellation_img=self.parcellation_img,
-           expected_nodes=self.num_nodes,
-           )
-           stimulus = self.stimulus_loader.load(
-           item,
-           n_scans=fmri_data.shape[0],
-           )
+            if "fmri" not in item:
+                raise KeyError("Each run entry must contain an 'fmri' path")
 
-            node_std = np.std(fmri_data, axis=0)
-            constant_nodes = np.flatnonzero(node_std <= 1e-8)
-
-            if constant_nodes.size:
-                raise ValueError(
-                    f"Extracted fMRI data from {fmri_path} contains "
-                    f"{constant_nodes.size} constant or near-constant nodes. "
-                    "First affected node indices: "
-                    f"{constant_nodes[:10].tolist()}"
-                )
-
-            fmri_data = zscore(
-                fmri_data,
-                axis=0,
-            ).astype(np.float32)
-
-            if not np.all(np.isfinite(fmri_data)):
-                raise RuntimeError(
-                    f"Z-scoring produced non-finite values for {fmri_path}"
-                )
-
+            fmri_data = load_fmri_run(
+                fmri_path=Path(item["fmri"]),
+                masker=self.masker,
+                parcellation_img=self.parcellation_img,
+                expected_nodes=self.num_nodes,
+            )
             run_length = int(fmri_data.shape[0])
-            stimulus = self._load_stimulus(item, run_length)
+            stimulus = self.stimulus_loader.load(
+                item,
+                n_scans=run_length,
+            )
 
             series_parts.append(fmri_data)
             stimulus_parts.append(stimulus)
@@ -224,47 +189,20 @@ class NiftiLaminarDataset(Dataset):
             np.concatenate(stimulus_parts, axis=0).astype(np.float32),
             run_lengths,
         )
-    
-
-    def _should_convolve_stimulus(self) -> bool:
-        should_convolve = bool(config.CONVOLVE_STIMULUS)
-
-        if bool(config.USE_HEMODYNAMIC_HEAD):
-            should_convolve = (
-                should_convolve
-                and bool(config.ALLOW_STIMULUS_PRECONV_WITH_HEMO)
-            )
-
-        return should_convolve
-
-    def _stimulus_response_kernel(self) -> np.ndarray:
-        response_function = str(config.RESPONSE_FUNCTION).lower()
-
-        if response_function == "cbv":
-            return canonical_cbv_response(self.tr, 30.0)
-
-        if response_function == "hrf":
-            return canonical_hrf_response(30.0, tr=self.tr)
-
-        if response_function == "uniform":
-            # Identity kernel: preserve the sampled stimulus unchanged.
-            return np.ones(1, dtype=np.float32)
-
-        raise ValueError(
-            f"Unknown RESPONSE_FUNCTION: {config.RESPONSE_FUNCTION!r}"
-        )
-
 
     def _build_valid_start_indices(self) -> list[int]:
         starts: list[int] = []
-        for offset, run_length in zip(self.run_offsets, self.run_lengths):
-            maximum_local_start = run_length - (
-                self.window_size + self.prediction_horizon
-            )
+        required_length = self.window_size + self.prediction_horizon
+
+        for offset, run_length in zip(
+            self.run_offsets,
+            self.run_lengths,
+            strict=True,
+        ):
+            maximum_local_start = run_length - required_length
             if maximum_local_start >= 0:
-                starts.extend(
-                    range(offset, offset + maximum_local_start + 1)
-                )
+                starts.extend(range(offset, offset + maximum_local_start + 1))
+
         return starts
 
     @staticmethod
@@ -278,7 +216,10 @@ class NiftiLaminarDataset(Dataset):
     def __len__(self) -> int:
         return len(self.valid_start_indices)
 
-    def __getitem__(self, index: int):
+    def __getitem__(
+        self,
+        index: int,
+    ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         start = self.valid_start_indices[index]
         history_stop = start + self.window_size
         future_stop = history_stop + self.prediction_horizon
@@ -286,4 +227,9 @@ class NiftiLaminarDataset(Dataset):
         fmri_history = torch.from_numpy(self.time_series[start:history_stop])
         stimulus_history = torch.from_numpy(self.stim_drive[start:history_stop])
         fmri_future = torch.from_numpy(self.time_series[history_stop:future_stop])
-        return fmri_history.float(), stimulus_history.float(), fmri_future.float()
+
+        return (
+            fmri_history.float(),
+            stimulus_history.float(),
+            fmri_future.float(),
+        )
