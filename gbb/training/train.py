@@ -125,10 +125,7 @@ def _build_datasets_and_loaders(
         seed=int(config.SEED),
     )
     if rank == 0:
-        print(
-            f"Training on {len(train_runs)} runs; validating on "
-            f"{len(test_runs)} runs."
-        )
+        print(f"Training on {len(train_runs)} runs; validating on {len(test_runs)} runs.")
 
     train_dataset = NiftiLaminarDataset(
         data_list=train_runs,
@@ -248,7 +245,9 @@ def main() -> None:
             sensory_mask=train_dataset.sensory_mask,
             model_type=config.MODEL_TYPE,
             use_hemodynamic_head=bool(config.USE_HEMODYNAMIC_HEAD),
+            allow_all_nodes=bool(config.ALLOW_ALL_NODES_STIMULUS),
         ).to(device)
+
         if world_size > 1:
             ddp_kwargs = {"find_unused_parameters": False}
             if device.type == "cuda":
@@ -265,10 +264,7 @@ def main() -> None:
         if is_master:
             log_stream = log_path.open("w", encoding="utf-8", buffering=1)
             writer = SummaryWriter(log_dir=str(log_dir / timestamp))
-            print(
-                f"Starting {config.MODEL_TYPE} training on {device}; "
-                f"log={log_path}"
-            )
+            print(f"Starting {config.MODEL_TYPE} training on {device}; log={log_path}")
 
         best_correlation = float("-inf")
         epochs_without_improvement = 0
@@ -359,9 +355,7 @@ def main() -> None:
                         results_dir / "checkpoint_best.pth",
                     )
                 else:
-                    epochs_without_improvement += max(
-                        1, int(config.VALIDATE_EVERY_EPOCHS)
-                    )
+                    epochs_without_improvement += max(1, int(config.VALIDATE_EVERY_EPOCHS))
 
             # All ranks must take the same early-stopping branch.
             stop_tensor = torch.tensor(

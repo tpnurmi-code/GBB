@@ -249,13 +249,16 @@ class MesocortGBB(nn.Module):
                 raise ValueError("stim_window contains non-finite values")
 
         else:
-            if self.stimulus_enabled:
+            if stim_window is not None:
                 if tuple(stim_window.shape) != expected_stimulus_shape:
                     raise ValueError(
                         "Expected a zero placeholder stimulus with shape "
                         f"{expected_stimulus_shape}; got "
                         f"{tuple(stim_window.shape)}"
                     )
+
+                if not torch.isfinite(stim_window).all():
+                    raise ValueError("stim_window contains non-finite values")
 
                 if torch.count_nonzero(stim_window).item() != 0:
                     raise ValueError(
