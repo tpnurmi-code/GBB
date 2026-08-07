@@ -1,0 +1,225 @@
+# GBB 7T-CBV configuration.
+#
+# Requires:
+#   group_roi_mask.nii
+#   cortical_columns_7T.nii
+#
+# IMPORTANT:
+# Verify tr, num_runs, and num_nodes_expected against the
+# actual 7T-CBV dataset before a production experiment.
+
+
+[experiment]
+seed = 42
+super_computer_training = false
+demonstration = true
+model_type = "H1"
+
+
+[masker]
+detrend = false
+
+# A 7T-CBV experiment explicitly requires column information.
+columnar_mask_policy = "ERROR"
+
+
+[stimulus]
+mode = "DENSE"
+injection_mode = "COORDS_REGION_INTERSECTION"
+
+sensory_regions = [
+    "Postcentral",
+    "SomMot",
+    "Somatosensory",
+    "Par",
+    "S1",
+]
+
+excluded_regions = [
+    "Precentral",
+    "M1",
+    "Frontal",
+    "Premotor",
+]
+
+mni_coords = [-42.0, -25.0, 55.0]
+radius_mm = 25.0
+
+response_function = "cbv"
+convolve_stimulus = false
+allow_stimulus_preconv_with_hemo = false
+
+dense_stimulus_ext = "_stim.mat"
+dense_stimulus_key = "stimulus"
+required_trial_type = "hand_movement"
+
+input_channels = 1
+raw_sampling_rate = 500.0
+
+missing_stimulus_policy = "ERROR"
+stimulus_shape_policy = "ERROR"
+sensory_selection_policy = "STRICT"
+
+require_nonzero_stimulus = true
+allow_all_nodes_stimulus = false
+
+
+[hemodynamics]
+use_head = true
+kernel_size = 5
+init = "cbv"
+
+
+[dataloader]
+train_set_size = 0.8
+num_runs = 2
+train_workers = 4
+test_workers = 2
+
+
+[training]
+batch_size = 16
+num_epochs = 20
+patience = 15
+
+learning_rate = 0.001
+weight_decay = 0.00001
+grad_clip = 1.0
+
+use_amp = true
+
+# VERIFY against the actual 7T acquisition.
+tr = 2.5
+
+accel_axes = 1
+window_size = 30
+prediction_horizon = 5
+
+# VERIFY against group_roi_mask.nii.
+num_nodes_expected = 305
+
+adjacency_sigma = 40.0
+
+prune_start_frac = 0.50
+prune_every_epochs = 5
+min_epochs_before_prune = 30
+disable_hard_prune_in_demo = true
+
+validate_every_epochs = 5
+always_validate_final = true
+
+maskout_timeseries = true
+maskout_length = 5
+dropout = 0.3
+
+
+[feature_extractor]
+hidden_dim = 64
+dropout = 0.1
+
+cnn_stride = 1
+cnn_layers = 2
+rnn_layers = 2
+transformer_layers = 2
+mlp_layers = 3
+
+local_attention_radius = 4
+
+
+[graph]
+kan_basis_functions = 5
+kan_layers = 1
+kan_heads = 3
+
+spline_coeff = 0.05
+adjacency_prior_strength = 0.25
+
+enable_signed_head_messages = true
+head_signs = [1.0, -1.0, 0.5]
+graph_mix = 0.70
+
+
+[cfc]
+backbone_layers = 2
+backbone_units = 128
+
+physics_mode = "biophysical"
+use_seq_cfc = true
+fmri_step_proj_dim = 128
+
+tau_min_phys = 1.5
+tau_max_phys = 12.0
+tau_bound_mode = "sigmoid"
+
+gate_target = 0.50
+gate_min = 0.05
+gate_max = 0.95
+
+f_activity_max = 3.0
+drive_max_abs = 3.0
+
+
+[temporal_stimulus]
+use_temporal_stim_encoder = true
+kernel_size = 5
+dropout_prob = 0.20
+dropout_start_frac = 0.30
+
+
+[losses]
+lambda_accuracy = 1.0
+lambda_correlation = 10.0
+lambda_correlation_final = 3.0
+
+reg_phase_start_frac = 0.60
+
+lambda_var = 1.25
+lambda_derivative = 0.5
+
+lambda_metabolic = 0.00001
+lambda_sparsity = 0.000001
+lambda_wiring = 0.00001
+lambda_group_lasso = 0.0002
+lambda_head_group = 0.0
+lambda_smoothness = 5.0
+lambda_orth_loss = 0.05
+
+lambda_longterm = 0.05
+longterm_threshold_moderate = 8.0
+longterm_threshold_extreme = 20.0
+
+lambda_tau_var = 0.05
+lambda_tau_saturation = 0.20
+lambda_tau_diversity = 0.25
+lambda_tau_smooth = 0.05
+lambda_tau_hier = 0.05
+lambda_rank_loss = 0.05
+
+tau_lognormal_median = 5.0
+tau_lognormal_sigma = 0.5
+
+lambda_head_sign = 0.0
+head_sign_warmup_frac = 0.60
+head_mod_gain_penalty = 0.25
+
+lambda_cfc_pop = 0.01
+
+cfc_node_bias_smooth_w = 0.10
+cfc_node_bias_l2_w = 0.01
+cfc_gate_reg_w = 0.10
+cfc_delta_energy_w = 0.05
+cfc_f_activity_w = 0.05
+cfc_drive_balance_w = 0.05
+cfc_drive_bound_w = 0.05
+
+
+[smoothness]
+sigma_mm = 40.0
+k_neighbors = 15
+
+
+[optimization]
+n_trials = 50
+trials_per_eval = 3
+baseline_mse = 0.80
+max_perf_drop = 0.05
