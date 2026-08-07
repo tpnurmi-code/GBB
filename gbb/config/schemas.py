@@ -89,6 +89,7 @@ class HemodynamicConfig:
 @dataclass
 class DataLoaderConfig:
     train_set_size: float = 0.8
+    num_runs: int = 2
     train_workers: int = 4
     test_workers: int = 2
 
