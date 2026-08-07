@@ -139,7 +139,38 @@ GBB/
 | `NOTICE` | Required notifications |
 | `CITATION.cff` | Citing the GBB project |
 
+## data
 
+The root data directory contains fMRI data, a mask file and its metadata determining which brain regions are included in the training / modelling and in the case of 7T-CBV-fMRI data columnar sturcture file.   
+
+| File | Purpose |
+|---|---|
+| `group_roi_mask.nii` | A group brain template mask file for determining which brain regions are included in the training /modelling process |
+| `mask_metadata.json` | Metadata file the mask |
+|`cortical_columns_7T.nii`| A NifTi file representing the columnar structure of the group brain template |
+
+
+## `data/Sxx/Nifti` — Subject data
+Subject fMRI data and possible event data. 
+| File | Purpose |
+|---|---|
+| `rfunctional_runXX.nii` | Preprocessed fMRI data for each run XX |
+| `rfunctional_runXX_events.tsv` | Events, their timings, durations and possible amplitudes if the events are only represented by these parameters in run XX (see below for an alternative representation) |
+|`rfunctional_run1_stim.mat`| Events represented as data in the Matlab .mat format |
+
+## `data/results` — Results of the training / modelling process
+| File | Purpose |
+|---|---|
+| `checkpoint_latest.pth` | Latest checkpoint of the training |
+| `checkpoint_final.pth` | Final checkpoint of the training |
+|`checkpoint_best.pth`| Best checkpoint measured by the loss function |
+
+## `data/results/maps_dd_mm_yyyy_hh_mm` — Group-level maps of the infered properties of the model in NifTi format with date and time of the file generation 
+| File | Purpose |
+|---|---|
+| `checkpoint_latest.pth` | Latest checkpoint of the training |
+| `checkpoint_final.pth` | Final checkpoint of the training |
+|`checkpoint_best.pth`| Best checkpoint measured by the loss function |
 
 ## `gbb/` — installable Python package
 
