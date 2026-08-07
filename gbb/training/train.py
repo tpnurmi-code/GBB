@@ -118,7 +118,7 @@ def _build_datasets_and_loaders(
     rank: int,
     world_size: int,
 ):
-    all_runs = get_subject_files(config.DATA_DIR, num_runs=2)
+    all_runs = get_subject_files(config.DATA_DIR, num_runs=int(config.NUM_RUNS))
     train_runs, test_runs = _split_runs_by_subject(
         all_runs,
         train_fraction=float(config.TRAIN_SET_SIZE),
