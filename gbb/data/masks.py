@@ -154,20 +154,47 @@ def load_column_ids(
     mask_data: np.ndarray,
     region_ids: np.ndarray,
     node_region_ids: torch.Tensor,
-    policy: str = "ERROR",
+    policy: str = "DISABLED",
 ) -> torch.Tensor:
-    """Return one column ID per node under an explicit fallback policy."""
+    """Return one column ID per node under an explicit column-mask policy."""
+
     normalized_policy = str(policy).upper()
-    valid_policies = {"ERROR", "REGION_FALLBACK"}
+
+    valid_policies = {
+        "DISABLED",
+        "OPTIONAL",
+        "ERROR",
+        "REGION_FALLBACK",
+    }
+
     if normalized_policy not in valid_policies:
-        raise ValueError(f"policy must be 'ERROR' or 'REGION_FALLBACK'; got {normalized_policy!r}")
+        raise ValueError(
+            "policy must be one of "
+            "'DISABLED', 'OPTIONAL', 'ERROR', "
+            f"or 'REGION_FALLBACK'; got {normalized_policy!r}"
+        )
 
     region_ids = np.asarray(region_ids)
+
     if node_region_ids.numel() != len(region_ids):
-        raise ValueError("node_region_ids must contain exactly one value per region")
+        raise ValueError(
+            "node_region_ids must contain exactly one value per region"
+        )
+
+    # Columns are intentionally not part of this experiment.
+    if normalized_policy == "DISABLED":
+        return node_region_ids.detach().clone().to(dtype=torch.long)
 
     if not columnar_mask_path.is_file():
-        message = f"Columnar mask file not found: {columnar_mask_path}"
+        message = (
+            f"Columnar mask file not found: {columnar_mask_path}"
+        )
+
+        # OPTIONAL means absence is expected and not an error.
+        if normalized_policy == "OPTIONAL":
+            return node_region_ids.detach().clone().to(dtype=torch.long)
+
+        # REGION_FALLBACK explicitly reports degraded behaviour.
         if normalized_policy == "REGION_FALLBACK":
             warnings.warn(
                 f"{message}. Using region-group IDs instead.",
@@ -175,6 +202,7 @@ def load_column_ids(
                 stacklevel=2,
             )
             return node_region_ids.detach().clone().to(dtype=torch.long)
+
         raise FileNotFoundError(message)
 
     columnar_img = nib.load(str(columnar_mask_path))
