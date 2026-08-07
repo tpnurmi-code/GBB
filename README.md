@@ -287,6 +287,6 @@ Hasani R., Lechner M.,  Amini A., Liebenwein L,  Ray A, Tschaikowski M., Tesch G
 Nature Machine Intelligence, 4, pages 992–1003. https://www.nature.com/articles/s42256-022-00556-7
 
 <a id="1">[2]</a> 
-Ziyao L. (2020). 
+Ziyao L. (2024). 
 Kolmogorov-Arnold Networks are Radial Basis Function Networks
 arXiv (https://arxiv.org/html/2405.06721v1)
