@@ -9,7 +9,7 @@ from typing import Literal
 MissingStimulusPolicy = Literal["ERROR", "WARN", "ZEROS"]
 StimulusShapePolicy = Literal["ERROR", "WARN", "COERCE"]
 SensorySelectionPolicy = Literal["STRICT", "WARN", "FALLBACK"]
-ColumnarMaskPolicy = Literal["ERROR", "REGION_FALLBACK"]
+ColumnarMaskPolicy = Literal["DISABLED", "OPTIONAL", "ERROR", "REGION_FALLBACK",]
 
 ModelType = Literal["H1", "H2", "H3", "H4", "H5", "H6"]
 StimulusMode = Literal["EVENTS", "DENSE", "NONE"]
