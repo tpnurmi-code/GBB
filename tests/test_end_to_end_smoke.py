@@ -77,16 +77,17 @@ def test_synthetic_nifti_to_h1_backward(
         "COORDS_REGION_INTERSECTION",
     )
     monkeypatch.setattr(config, "SENSORY_REGIONS", ["S1_Postcentral"])
-
+    
     monkeypatch.setattr(
         config,
         "MASK_FILE",
         str(data_dir / "group_roi_mask.nii"),
     )
+    
     monkeypatch.setattr(
         config,
-        "COLUMNAR_MASK_FILE",
-        str(data_dir / "cortical_columns_7T.nii"),
+        "COLUMNAR_MASK_POLICY",
+        "DISABLED",
     )
 
     # Keep the CI model small while preserving all major model stages.
