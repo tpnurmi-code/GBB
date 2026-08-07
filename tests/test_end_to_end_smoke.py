@@ -34,12 +34,20 @@ def test_synthetic_nifti_to_h1_backward(
 
     result = MechanisticSyntheticFMRI(synthetic_config).generate_dataset()
     data_dir = result.output_dir
-
+    
     assert data_dir.exists()
     assert (data_dir / "group_roi_mask.nii").exists()
-    assert (data_dir / "cortical_columns_7T.nii").exists()
+    
+    # Quick synthetic data use the default BOLD response.
+    # A 7T cortical-column mask is therefore not required.
+    assert synthetic_config.response_kind == "bold"
+    assert not (
+        data_dir / "cortical_columns_7T.nii"
+    ).exists()
+    
     assert len(result.run_files) == (
-        synthetic_config.num_subjects * synthetic_config.num_runs
+        synthetic_config.num_subjects
+        * synthetic_config.num_runs
     )
 
     # ------------------------------------------------------------------
