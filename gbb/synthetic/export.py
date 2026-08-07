@@ -116,14 +116,19 @@ def write_masks_and_metadata(
         config, anatomy
     )
     nib.save(nib.Nifti1Image(label_mask, affine), str(output_dir / "group_roi_mask.nii"))
+    
     nib.save(
         nib.Nifti1Image(coarse_mask, affine),
         str(output_dir / "group_roi_mask_10.nii"),
     )
-    nib.save(
-        nib.Nifti1Image(column_mask, affine),
-        str(output_dir / "cortical_columns_7T.nii"),
-    )
+
+    # The explicit cortical-column NIfTI belongs to the
+    # synthetic 7T-CBV configuration only.
+    if str(config.response_kind).lower() == "cbv":
+        nib.save(
+            nib.Nifti1Image(column_mask, affine),
+            str(output_dir / "cortical_columns_7T.nii"),
+        )
 
     metadata: dict[str, dict[str, Any]] = {}
     for node in range(anatomy.num_nodes):
