@@ -24,10 +24,10 @@ The architecture employs three distinct components. For more specific descriptio
 The feature-extractor component compares six alternative temporal processing architectures. Spatial interactions between neural populations are subsequently modeled by the FastKAN graph layers.
 
 ### 2. Continuous-time neural-population dynamics 
-The second component corresponds to the internal neural computations and information processing of a neural population and consists of closed-form continuous-time (CfC) neural networks, which model the internal computations of a neural population with interpretable differential equations.
+The second component corresponds to the internal neural computations and information processing of a neural population and consists of closed-form continuous-time (CfC) neural networks, which model the internal computations of a neural population with interpretable differential equations [[1]](#1).
 
 ### 3. Inter-regional connectivity 
-The third component corresponds to connectivity between different neural populations and consists of a variant of Kolmogorov-Arnold networks (FastKAN) and model these connections with a mixture of Gaussian basis functions. The FastKAN component can also contain several attention heads that can model different types of connectivity. Multiple FastKAN interaction heads can learn candidate signed or functionally differentiated connectivity channels. Interpretations such as excitatory, inhibitory, or modulatory roles require independent validation.
+The third component corresponds to connectivity between different neural populations and consists of a variant of Kolmogorov-Arnold networks (FastKAN) and model these connections with a mixture of Gaussian basis functions. The FastKAN component can also contain several attention heads that can model different types of connectivity. Multiple FastKAN interaction heads can learn candidate signed or functionally differentiated connectivity channels. Interpretations such as excitatory, inhibitory, or modulatory roles require independent validation [[2]](#2)..
 
 ## Outputs
 
@@ -279,3 +279,14 @@ python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA avail
 ```bash
 python -m gbb.training.train
 ```
+
+## References
+<a id="1">[1]</a> 
+Hasani R., Lechner M.,  Amini A., Liebenwein L,  Ray A, Tschaikowski M., Tesch G. & Rus D. (2022).
+ Closed-form continuous-time neural networks
+Nature Machine Intelligence, 4, pages 992–1003. https://www.nature.com/articles/s42256-022-00556-7
+
+<a id="1">[2]</a> 
+Ziyao L. (2020). 
+Kolmogorov-Arnold Networks are Radial Basis Function Networks
+arXiv (https://arxiv.org/html/2405.06721v1)
