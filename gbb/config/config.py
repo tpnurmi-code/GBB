@@ -57,6 +57,7 @@ HEMO_KERNEL_SIZE = cfg.hemodynamics.kernel_size
 HEMO_INIT = cfg.hemodynamics.init
 
 TRAIN_SET_SIZE = cfg.dataloader.train_set_size
+NUM_RUNS = cfg.dataloader.num_runs
 TRAIN_LOADER_WORKERS = cfg.dataloader.train_workers
 TEST_LOADER_WORKERS = cfg.dataloader.test_workers
 
