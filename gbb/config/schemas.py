@@ -47,7 +47,7 @@ class MaskerConfig:
     detrend: bool = False
     low_pass: float | None = None
     high_pass: float | None = None
-    columnar_mask_policy: ColumnarMaskPolicy = "ERROR"
+    columnar_mask_policy: ColumnarMaskPolicy = "DISABLED"
 
 
 @dataclass
