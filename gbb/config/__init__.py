@@ -11,7 +11,6 @@ from .defaults import DEFAULT_CONFIG, make_default_config
 from .loader import load_toml_config
 from .schemas import Config
 
-
 cfg = DEFAULT_CONFIG
 
 
