@@ -29,7 +29,6 @@ LOW_PASS = cfg.masker.low_pass
 HIGH_PASS = cfg.masker.high_pass
 COLUMNAR_MASK_POLICY = cfg.masker.columnar_mask_policy
 
-DENSE_STIMULUS_KEY = cfg.stimulus.dense_stimulus_key
 REQUIRED_TRIAL_TYPE = cfg.stimulus.required_trial_type
 
 MISSING_STIMULUS_POLICY = cfg.stimulus.missing_stimulus_policy
@@ -49,6 +48,7 @@ RESPONSE_FUNCTION = cfg.stimulus.response_function
 CONVOLVE_STIMULUS = cfg.stimulus.convolve_stimulus
 ALLOW_STIMULUS_PRECONV_WITH_HEMO = cfg.stimulus.allow_stimulus_preconv_with_hemo
 DENSE_STIMULUS_EXT = cfg.stimulus.dense_stimulus_ext
+DENSE_STIMULUS_KEY = cfg.stimulus.dense_stimulus_key
 STIMULUS_INPUT_CHANNELS = cfg.stimulus.input_channels
 RAW_SAMPLING_RATE = cfg.stimulus.raw_sampling_rate
 

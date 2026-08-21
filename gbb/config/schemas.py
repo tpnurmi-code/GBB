@@ -62,15 +62,16 @@ class StimulusConfig:
         default_factory=lambda: ["Precentral", "M1", "Frontal", "Premotor"]
     )
     mni_coords: tuple[float, float, float] = (-42.0, -25.0, 55.0)
-    radius_mm: float = 25.0
+    radius_mm: float = 10.0
     response_function: ResponseFunction = "hrf"
     convolve_stimulus: bool = False
     allow_stimulus_preconv_with_hemo: bool = False
     dense_stimulus_ext: str = "_stim.mat"
     input_channels: int = 1
     raw_sampling_rate: float = 500.0
-    dense_stimulus_key: str | None = "stimulus"
+    dense_stimulus_key: str | None = "data"
     required_trial_type: str | None = "hand_movement"
+    max_dense_duration_mismatch_s: float = 180.0
 
     missing_stimulus_policy: MissingStimulusPolicy = "ERROR"
     stimulus_shape_policy: StimulusShapePolicy = "ERROR"

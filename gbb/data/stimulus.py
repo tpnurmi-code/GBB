@@ -60,6 +60,12 @@ class StimulusLoader:
         self.raw_sampling_rate = float(settings.raw_sampling_rate)
         if self.raw_sampling_rate <= 0:
             raise ValueError("Stimulus raw_sampling_rate must be positive")
+        
+        self.max_dense_duration_mismatch_s = float(settings.max_dense_duration_mismatch_s)
+
+        if self.max_dense_duration_mismatch_s < 0:
+          raise ValueError("Stimulus max_dense_duration_mismatch_s must be non-negative")	
+
 
         self.response_function = str(settings.response_function).lower()
         if self.response_function not in {"hrf", "cbv", "uniform"}:
@@ -379,30 +385,88 @@ class StimulusLoader:
 
         samples_per_tr = int(round(self.raw_sampling_rate * self.tr))
         if samples_per_tr <= 0:
-            raise ValueError("raw_sampling_rate * tr must be at least one sample")
-
-        available_trs, remainder = divmod(
-            raw_data.shape[0],
-            samples_per_tr,
-        )
-        if available_trs == 0:
-            return self._handle_stimulus_failure(
-                f"Dense stimulus {file_path} has only "
-                f"{raw_data.shape[0]} samples; at least "
-                f"{samples_per_tr} are required for one TR",
-                target_n_scans,
-            )
-        if remainder:
-            self._handle_shape_mismatch(
-                f"Dense stimulus {file_path} has {remainder} trailing "
-                "samples that do not form a complete TR"
+            raise ValueError(
+                "raw_sampling_rate * tr must be at least one sample"
             )
 
-        truncated = raw_data[: available_trs * samples_per_tr]
-        binned = truncated.reshape((available_trs, samples_per_tr) + raw_data.shape[1:]).mean(
-            axis=1
+        # The fMRI acquisition defines the required dense-stimulus duration.
+        required_samples = target_n_scans * samples_per_tr
+        available_samples = raw_data.shape[0]
+
+        sample_difference = available_samples - required_samples
+        duration_difference_s = (
+            sample_difference / self.raw_sampling_rate
         )
-        binned = binned.reshape(available_trs, -1).astype(np.float32)
+
+        abs_duration_difference_s = abs(duration_difference_s)
+
+        # Hard failure when stimulus and fMRI durations differ too much.
+        # Exactly the configured tolerance is still accepted.
+        if (
+            abs_duration_difference_s
+            > self.max_dense_duration_mismatch_s
+        ):
+            raise ValueError(
+                f"Dense stimulus {file_path} duration differs from the "
+                f"fMRI acquisition by {duration_difference_s:+.3f} s "
+                f"({sample_difference:+d} samples). "
+                f"The configured maximum allowed mismatch is "
+                f"{self.max_dense_duration_mismatch_s:.3f} s. "
+                f"Stimulus samples={available_samples}, "
+                f"required samples={required_samples}, "
+                f"sampling rate={self.raw_sampling_rate:.3f} Hz, "
+                f"TR={self.tr:.3f} s, "
+                f"fMRI scans={target_n_scans}."
+            )
+
+        # Small duration mismatches are assumed to occur at the END
+        # of the recording. Longer stimulus recordings are truncated;
+        # shorter recordings are zero-padded.
+        if sample_difference > 0:
+            warnings.warn(
+                f"Dense stimulus {file_path} is "
+                f"{duration_difference_s:.3f} s longer than the fMRI run "
+                f"({sample_difference} extra samples). "
+                "The difference is within the configured tolerance of "
+                f"{self.max_dense_duration_mismatch_s:.3f} s; "
+                "discarding the trailing stimulus samples.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+            aligned_raw_data = raw_data[:required_samples]
+
+        elif sample_difference < 0:
+            missing_samples = -sample_difference
+
+            warnings.warn(
+                f"Dense stimulus {file_path} is "
+                f"{abs(duration_difference_s):.3f} s shorter than the "
+                f"fMRI run ({missing_samples} missing samples). "
+                "The difference is within the configured tolerance of "
+                f"{self.max_dense_duration_mismatch_s:.3f} s; "
+                "zero-padding the end of the stimulus recording.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+
+            pad_width = [(0, missing_samples), *[(0, 0) for _ in range(raw_data.ndim - 1)],]
+
+            aligned_raw_data = np.pad(raw_data, pad_width, mode="constant",)
+
+        else:
+            aligned_raw_data = raw_data
+
+        if aligned_raw_data.shape[0] != required_samples:
+            raise RuntimeError(
+                "Internal stimulus alignment error: expected "
+                f"{required_samples} samples after duration correction, "
+                f"got {aligned_raw_data.shape[0]}"
+            )
+
+        binned = aligned_raw_data.reshape((target_n_scans, samples_per_tr)+ aligned_raw_data.shape[1:]).mean(axis=1)
+
+        binned = binned.reshape(target_n_scans, -1,).astype(np.float32)
 
         if self._should_convolve_stimulus():
             kernel = self._stimulus_response_kernel()
@@ -412,16 +476,8 @@ class StimulusLoader:
                     binned[:, channel],
                     kernel,
                     mode="full",
-                )[:available_trs]
+                )[:target_n_scans]
             binned = convolved
-
-        if binned.shape[0] != target_n_scans:
-            self._handle_shape_mismatch(
-                f"Dense stimulus {file_path} produces "
-                f"{binned.shape[0]} TRs; the fMRI run requires "
-                f"{target_n_scans}"
-            )
-            binned = self._coerce_length(binned, target_n_scans)
 
         binned = self._zscore_channels(binned)
         binned = self._match_stimulus_channels(

@@ -172,7 +172,7 @@ def write_dense_stimulus_mat(
     raw = np.interp(raw_time, neural_time, neural_stimulus, left=0.0, right=0.0)
     # Nonnegative accelerometer-magnitude-like signal with small sensor noise.
     raw = np.clip(raw + rng.normal(0.0, 0.025, size=raw_count), 0.0, None)
-    savemat(path, {"stimulus": raw.astype(np.float32)[:, None]})
+    savemat(path, {"data": raw.astype(np.float32)[:, None]})
 
 
 def write_node_timeseries_npz(

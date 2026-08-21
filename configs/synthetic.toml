@@ -45,7 +45,7 @@ excluded_regions = [
 ]
 
 mni_coords = [-42.0, -25.0, 55.0]
-radius_mm = 25.0
+radius_mm = 10.0
 
 response_function = "hrf"
 convolve_stimulus = false
