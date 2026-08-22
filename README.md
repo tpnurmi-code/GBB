@@ -11,7 +11,7 @@ GBB aims at learning novel relationships and mechanisms from 7T-CBV-fMRI neuroim
 Since the brain is an incredibly energy-efficient organ, the GBB project's goal is to develop novel architectural structures and learning algorithms to make future machine learning architectures more energy-efficient and better at learning patterns from few examples instead of thousands.
 
 ### 3. Transparent model design 
-The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.
+The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.  
 For further description, see the [short research plan](https://github.com/tpnurmi-code/GBB/blob/main/docs/GBB_Research_Plan_short.pdf) for the project.
 ## Future of the project 
 For the longer-term vision for the project, see the [Phase II documentation](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
