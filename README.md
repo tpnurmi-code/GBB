@@ -105,12 +105,58 @@ A basic CPU installation is:
 ```bash
 python -m pip install torch
 ```
+#### GPU training (recommended)
 
-Verify that PyTorch can access the accelerator:
+Full GBB training is computationally intensive, and an NVIDIA CUDA-capable GPU
+is strongly recommended.
+
+GBB automatically uses a CUDA GPU when PyTorch reports that CUDA is available.
+If CUDA is not available, training falls back to the CPU.
+
+After installing PyTorch, verify the installation before starting a full
+training run:
 
 ```bash
-python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA available:', torch.cuda.is_available())"
+python -c "import torch; print('PyTorch:', torch.__version__); print('CUDA build:', torch.version.cuda); print('CUDA available:', torch.cuda.is_available()); print('GPU count:', torch.cuda.device_count()); print('GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None')"
 ```
+
+For an NVIDIA GPU, the expected output should include something similar to:
+
+```text
+CUDA build: 13.0
+CUDA available: True
+GPU count: 1
+GPU: NVIDIA GeForce RTX 3090
+```
+
+The exact CUDA version and GPU model will depend on the system.
+
+> [!IMPORTANT]
+> If `CUDA available` is `False`, GBB will run on the CPU instead. Do not start
+> a full training experiment until the PyTorch/CUDA installation has been
+> corrected, unless CPU execution is intentional.
+
+When training begins, GBB also reports the selected device:
+
+```text
+Starting H1 training on cuda:0
+```
+
+If the corresponding message reports `cpu`, GPU acceleration is not active.
+
+For AMD GPUs, install the appropriate ROCm-enabled PyTorch build. PyTorch uses
+the `torch.cuda` interface for many ROCm device checks as well.
+
+#### CPU-only installation
+
+A CPU installation is sufficient for imports, automated tests, and small
+development runs:
+
+```bash
+python -m pip install torch
+```
+
+CPU execution is not recommended for full GBB model training.
 
 ### 4. Install GBB
 
