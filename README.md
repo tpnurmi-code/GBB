@@ -28,7 +28,7 @@ The feature-extractor component compares six alternative temporal processing arc
 The second component corresponds to the internal neural computations and information processing of a neural population and consists of closed-form continuous-time (CfC) neural networks, which model the internal computations of a neural population with interpretable differential equations [[1]](#1).
 
 ### 3. Inter-regional connectivity 
-The third component corresponds to connectivity between different neural populations and consists of a variant of Kolmogorov-Arnold networks (FastKAN) and model these connections with a mixture of Gaussian basis functions. The FastKAN component can also contain several attention heads that can model different types of connectivity. Multiple FastKAN interaction heads can learn candidate signed or functionally differentiated connectivity channels. Interpretations such as excitatory, inhibitory, or modulatory roles require independent validation [[2]](#2)..
+The third component corresponds to connectivity between different neural populations and consists of a variant of Kolmogorov-Arnold networks (FastKAN) and model these connections with a mixture of Gaussian basis functions. The FastKAN component can also contain several attention heads that can model different types of connectivity. Multiple FastKAN interaction heads can learn candidate signed or functionally differentiated connectivity channels. Interpretations such as excitatory, inhibitory, or modulatory roles require independent validation [[2]](#2).
 
 ## Outputs
 
