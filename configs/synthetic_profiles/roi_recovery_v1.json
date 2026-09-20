@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "name": "sensorimotor_roi_recovery_v1",
+  "description": "ROI-specific synthetic ground truth for first GBB parameter-recovery experiments.",
+
+  "node_parameters": {
+    "defaults": {
+      "tau_seconds": {
+        "distribution": "fixed",
+        "value": 2.8
+      },
+      "intrinsic_drive": {
+        "distribution": "fixed",
+        "value": 0.0
+      }
+    },
+
+    "rules": [
+      {
+        "name": "S1",
+        "match": {
+          "region": "S1_Postcentral"
+        },
+        "parameters": {
+          "tau_seconds": {
+            "distribution": "normal",
+            "mean": 1.8,
+            "sd": 0.08,
+            "clip": [1.6, 2.0]
+          },
+          "intrinsic_drive": {
+            "distribution": "normal",
+            "mean": 0.35,
+            "sd": 0.04,
+            "clip": [0.20, 0.50]
+          }
+        }
+      },
+
+      {
+        "name": "M1",
+        "match": {
+          "region": "M1_Precentral"
+        },
+        "parameters": {
+          "tau_seconds": {
+            "distribution": "normal",
+            "mean": 2.5,
+            "sd": 0.08,
+            "clip": [2.2, 2.8]
+          },
+          "intrinsic_drive": {
+            "distribution": "normal",
+            "mean": 0.15,
+            "sd": 0.04,
+            "clip": [0.00, 0.30]
+          }
+        }
+      },
+
+      {
+        "name": "S2",
+        "match": {
+          "region": "S2_ParietalOperculum"
+        },
+        "parameters": {
+          "tau_seconds": {
+            "distribution": "normal",
+            "mean": 3.3,
+            "sd": 0.08,
+            "clip": [3.0, 3.6]
+          },
+          "intrinsic_drive": {
+            "distribution": "normal",
+            "mean": -0.15,
+            "sd": 0.04,
+            "clip": [-0.30, 0.00]
+          }
+        }
+      },
+
+      {
+        "name": "Association",
+        "match": {
+          "region": "Association_Parietal"
+        },
+        "parameters": {
+          "tau_seconds": {
+            "distribution": "normal",
+            "mean": 4.1,
+            "sd": 0.08,
+            "clip": [3.8, 4.4]
+          },
+          "intrinsic_drive": {
+            "distribution": "normal",
+            "mean": -0.35,
+            "sd": 0.04,
+            "clip": [-0.50, -0.20]
+          }
+        }
+      }
+    ]
+  }
+}

@@ -33,6 +33,7 @@ from .hemodynamics import (
 )
 from .network import GroundTruthNetwork, build_ground_truth_network
 from .noise import add_measurement_noise, build_measurement_noise
+from .profiles import GroundTruthProfile, load_ground_truth_profile
 
 
 @dataclass(slots=True)
@@ -67,8 +68,31 @@ class MechanisticSyntheticFMRI:
         self.config = config or SyntheticFMRIConfig()
         self.config.validate()
         self.anatomy = build_synthetic_anatomy(self.config)
-        self.network = build_ground_truth_network(self.config, self.anatomy)
-        self.neural_ground_truth = build_neural_ground_truth(self.config, self.anatomy)
+
+        self.ground_truth_profile: GroundTruthProfile | None = None
+        self.ground_truth_profile_path: Path | None = None
+
+        if self.config.ground_truth_profile is not None:
+            self.ground_truth_profile_path = (
+                Path(self.config.ground_truth_profile)
+                .expanduser()
+                .resolve()
+            )
+
+            self.ground_truth_profile = load_ground_truth_profile(
+                self.ground_truth_profile_path
+            )
+
+        self.network = build_ground_truth_network(
+            self.config,
+            self.anatomy,
+        )
+
+        self.neural_ground_truth = build_neural_ground_truth(
+            self.config,
+            self.anatomy,
+            profile=self.ground_truth_profile,
+        )
         self.hemodynamic_ground_truth = build_hemodynamic_ground_truth(
             self.config, self.anatomy
         )
@@ -173,6 +197,17 @@ class MechanisticSyntheticFMRI:
     def generate_dataset(self) -> SyntheticDatasetResult:
         """Write a complete GBB-compatible synthetic dataset to disk."""
         output_dir = prepare_output_directory(self.config)
+
+        if self.ground_truth_profile_path is not None:
+            (
+                output_dir / "ground_truth_profile_used.json"
+            ).write_text(
+                self.ground_truth_profile_path.read_text(
+                    encoding="utf-8"
+                ),
+                encoding="utf-8",
+            )
+
         write_dataset_description(output_dir, self.config)
         label_mask, affine, voxels_by_node = write_masks_and_metadata(
             self.config, self.anatomy, output_dir

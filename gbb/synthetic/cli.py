@@ -26,6 +26,19 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--response", choices=["bold", "cbv"], default="bold")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--overwrite", action="store_true")
+
+    parser.add_argument(
+        "--profile",
+        "--ground-truth-profile",
+        dest="ground_truth_profile",
+        type=Path,
+        default=None,
+        help=(
+            "Optional versioned JSON profile defining ROI-specific "
+            "synthetic ground-truth parameters."
+        ),
+    )
+
     parser.add_argument(
         "--quick",
         action="store_true",
@@ -47,6 +60,7 @@ def main(argv: list[str] | None = None) -> int:
         config.response_kind = args.response
         config.overwrite = args.overwrite
         config.compression = not args.uncompressed
+        config.ground_truth_profile = args.ground_truth_profile
     else:
         config = SyntheticFMRIConfig(
             output_dir=args.output,
@@ -60,6 +74,7 @@ def main(argv: list[str] | None = None) -> int:
             neural_dt=args.neural_dt,
             response_kind=args.response,
             compression=not args.uncompressed,
+            ground_truth_profile=args.ground_truth_profile,
         )
 
     result = MechanisticSyntheticFMRI(config).generate_dataset()
@@ -69,6 +84,10 @@ def main(argv: list[str] | None = None) -> int:
     print(f"Edges: {result.network.num_edges}")
     print(f"Runs written: {len(result.run_files)}")
     print(f"Response type: {config.response_kind.upper()}")
+
+    if config.ground_truth_profile is not None:
+        print(f"Ground-truth profile: {Path(config.ground_truth_profile).resolve()}")
+
     print("Contains participant data: no")
     return 0
 

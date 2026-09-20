@@ -9,6 +9,7 @@ import numpy as np
 from .anatomy import SyntheticAnatomy
 from .config import SyntheticFMRIConfig
 from .network import GroundTruthNetwork
+from .profiles import GroundTruthProfile, apply_node_ground_truth_profile
 
 
 @dataclass(slots=True)
@@ -27,6 +28,8 @@ def build_neural_ground_truth(
     config: SyntheticFMRIConfig,
     anatomy: SyntheticAnatomy,
     seed_offset: int = 0,
+    *,
+    profile: GroundTruthProfile | None = None,
 ) -> NeuralGroundTruth:
     """Create known regional time constants, signed drives, and input gains."""
     rng = np.random.default_rng(config.seed + 2027 + seed_offset)
@@ -63,6 +66,42 @@ def build_neural_ground_truth(
         if anatomy.column_ids[node] in sensory_columns and not anatomy.sensory_nodes[node]:
             stimulus_gain[node] = 0.32 if anatomy.layer_index[node] == 2 else 0.20
 
+    if profile is not None:
+        # Use a separate deterministic RNG so profile sampling does not
+        # depend on how many random values the procedural generator uses.
+        profile_rng = np.random.default_rng(config.seed + 7027 + seed_offset)
+
+        profiled = apply_node_ground_truth_profile(
+            profile,
+            anatomy,
+            {
+                "tau_seconds": tau,
+                "intrinsic_drive": intrinsic,
+                "stimulus_gain": stimulus_gain,
+            },
+            rng=profile_rng,
+        )
+
+        tau = profiled["tau_seconds"]
+        intrinsic = profiled["intrinsic_drive"]
+        stimulus_gain = profiled["stimulus_gain"]
+
+    if not np.all(np.isfinite(tau)):
+        raise ValueError("Ground-truth tau contains non-finite values")
+
+    if np.any(tau < config.tau_min_s) or np.any(tau > config.tau_max_s):
+        raise ValueError(
+            "Ground-truth profile produced tau values outside "
+            f"the synthetic simulator range "
+            f"[{config.tau_min_s}, {config.tau_max_s}] s"
+        )
+
+    if not np.all(np.isfinite(intrinsic)):
+        raise ValueError("Ground-truth intrinsic drive contains non-finite values")
+
+    if np.any(np.abs(intrinsic) > 1.0):
+        raise ValueError("Ground-truth intrinsic drive must remain within [-1, 1]")
+
     return NeuralGroundTruth(
         tau_seconds=tau.astype(np.float64),
         intrinsic_drive=intrinsic.astype(np.float64),
@@ -82,7 +121,9 @@ def make_block_stimulus(
     events: list[dict[str, float | str]] = []
     onset = config.first_block_onset_s
     while onset + config.block_duration_s < config.duration_s - config.tr:
-        jittered = max(0.0, onset + float(rng.uniform(-config.stimulus_jitter_s, config.stimulus_jitter_s)))
+        jittered = max(
+            0.0, onset + float(rng.uniform(-config.stimulus_jitter_s, config.stimulus_jitter_s))
+        )
         start = int(round(jittered / config.neural_dt))
         stop = min(
             config.neural_steps,
@@ -193,9 +234,7 @@ def simulate_neural_dynamics(
         neural_noise = config.neural_noise_sd * (chol @ rng.normal(size=n))
         total_drive = parameters.intrinsic_drive + recurrent + sensory_input + neural_noise
         equilibrium = np.tanh(total_drive)
-        activity[t] = activity[t - 1] + (config.neural_dt / tau) * (
-            equilibrium - activity[t - 1]
-        )
+        activity[t] = activity[t - 1] + (config.neural_dt / tau) * (equilibrium - activity[t - 1])
         activity[t] = np.clip(activity[t], -2.5, 2.5)
 
         driver_trace[t] = driver

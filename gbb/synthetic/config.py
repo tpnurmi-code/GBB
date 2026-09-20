@@ -56,6 +56,10 @@ class SyntheticFMRIConfig:
     min_velocity_mm_s: float = 250.0
     max_velocity_mm_s: float = 1800.0
 
+    # Optional externally specified mechanistic ground-truth profile.
+    # When None, the original procedural generator is used unchanged.
+    ground_truth_profile: Path | None = None
+
     # Neural and measurement noise
     neural_noise_sd: float = 0.08
     temporal_ar: float = 0.55
@@ -139,6 +143,10 @@ class SyntheticFMRIConfig:
     def to_dict(self) -> dict[str, object]:
         payload = asdict(self)
         payload["output_dir"] = str(self.output_dir)
+
+        if self.ground_truth_profile is not None:
+            payload["ground_truth_profile"] = str(self.ground_truth_profile)
+
         return payload
 
     @classmethod
