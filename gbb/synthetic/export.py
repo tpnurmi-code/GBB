@@ -5,6 +5,7 @@ from __future__ import annotations
 import csv
 import json
 import shutil
+from collections.abc import Mapping
 from pathlib import Path
 from typing import Any
 
@@ -236,6 +237,96 @@ def write_fmri_nifti(
     final_path = path.with_suffix(".nii.gz") if config.compression else path.with_suffix(".nii")
     nib.save(image, str(final_path))
     return final_path
+
+def write_node_scalar_maps(
+    map_directory: Path,
+    maps: Mapping[str, np.ndarray],
+    label_mask: np.ndarray,
+    affine: np.ndarray,
+) -> Path:
+    """Export node vectors as both NPY vectors and labelled NIfTI maps.
+
+    Numerical recovery analyses should use the NPY vectors or the canonical
+    mechanistic_ground_truth.npz values. The NIfTI files are primarily for
+    visualization and spatial inspection.
+
+    Node-vector index 0 corresponds to atlas label 1, index 1 to label 2, etc.
+    """
+
+    nib = _require_nibabel()
+
+    label_mask = np.asarray(label_mask)
+    affine = np.asarray(affine, dtype=np.float64)
+
+    if label_mask.ndim != 3:
+        raise ValueError(
+            f"label_mask must be three-dimensional, got shape {label_mask.shape}"
+        )
+
+    labels = np.unique(label_mask[label_mask > 0])
+
+    if labels.size == 0:
+        raise ValueError("label_mask contains no non-zero node labels")
+
+    if not np.allclose(labels, np.round(labels)):
+        raise ValueError("label_mask must contain integer-valued node labels")
+
+    label_ids = np.asarray(np.round(labels), dtype=np.int64)
+    expected_ids = np.arange(1, label_ids.size + 1, dtype=np.int64)
+
+    if not np.array_equal(label_ids, expected_ids):
+        raise ValueError(
+            "Node labels must be contiguous and start at 1. "
+            f"Found labels {label_ids.tolist()}"
+        )
+
+    map_directory = Path(map_directory)
+    map_directory.mkdir(parents=True, exist_ok=True)
+
+    for name, values in maps.items():
+        if Path(name).name != name:
+            raise ValueError(
+                f"Map name must be a filename stem, got {name!r}"
+            )
+
+        vector = np.asarray(values, dtype=np.float64).reshape(-1)
+
+        if vector.size != label_ids.size:
+            raise ValueError(
+                f"{name} contains {vector.size} values, "
+                f"but the label mask contains {label_ids.size} nodes"
+            )
+
+        if not np.all(np.isfinite(vector)):
+            raise ValueError(
+                f"{name} contains non-finite values"
+            )
+
+        np.save(
+            map_directory / f"{name}.npy",
+            vector,
+        )
+
+        volume = np.zeros(
+            label_mask.shape,
+            dtype=np.float32,
+        )
+
+        for node_id, value in enumerate(vector, start=1):
+            volume[label_mask == node_id] = np.float32(value)
+
+        image = nib.Nifti1Image(
+            volume,
+            affine,
+        )
+        image.header.set_xyzt_units("mm")
+
+        nib.save(
+            image,
+            str(map_directory / f"{name}.nii.gz"),
+        )
+
+    return map_directory
 
 
 def write_ground_truth(

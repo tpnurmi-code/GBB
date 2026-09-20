@@ -24,6 +24,7 @@ from .export import (
     write_fmri_nifti,
     write_ground_truth,
     write_masks_and_metadata,
+    write_node_scalar_maps,
     write_node_timeseries_npz,
 )
 from .hemodynamics import (
@@ -219,6 +220,16 @@ class MechanisticSyntheticFMRI:
             self.network,
             self.neural_ground_truth,
             self.hemodynamic_ground_truth,
+        )
+        
+        write_node_scalar_maps(
+            output_dir / "ground_truth" / "maps",
+            {
+                "GT_CfC_Tau_s": self.neural_ground_truth.tau_seconds,
+                "GT_CfC_IntrinsicDrive": self.neural_ground_truth.intrinsic_drive,
+            },
+            label_mask,
+            affine,
         )
 
         run_files: list[Path] = []
