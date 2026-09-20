@@ -4,11 +4,13 @@
 
 The Glass-Box Brain (GBB) project lies at the intersection of neuroscience/neuroimaging and AI. It is designed to utilize neuroimaging datasets as training data. Its main purpose is to employ 7-Tesla cerebral blood volume functional magnetic resonance imaging (7T-CBV-fMRI) data since this method offers improved laminar and mesoscale spatial resolution potentially at the level of cortical columns to determine different relationships between different brain regions and cortical columns. The aims of the GBB project are three-fold.
 
-### 1. Mechanistic neuroimaging 
+### 1. More mechanistic neuroimaging 
 GBB aims at learning novel relationships and mechanisms from 7T-CBV-fMRI neuroimaging data not obtainable otherwise. However, these novel relationships and mechanisms serve only as testable hypotheses with separate experiments, not the ground-truth. Thus, from the neuroscience perspective the GBB is a novel hypothesis generation 'device'.
 
 ### 2. Biologically inspired machine learning 
-Since the brain is an incredibly energy-efficient organ, the GBB project's goal is to develop novel architectural structures and learning algorithms to make future machine learning architectures more energy-efficient and better at learning patterns from few examples instead of thousands.
+The central goal of the GBB project is to create a computational tool for neuroimaging data.
+However, since the brain is an incredibly energy-efficient organ, the longer term vision for the GBB project is to serve as a 'test bench' for novel, biologically inspired machine learning.  
+This approach could provide novel architectural structures and learning algorithms learned from neuroimaging data to make future machine learning architectures more energy-efficient and training algorithms more efficient.
 
 ### 3. Transparent model design 
 The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.  
