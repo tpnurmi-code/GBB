@@ -41,7 +41,7 @@ Current implementation:
 
 Mechanistic interpretation of GBB parameter maps remains provisional until
 synthetic recovery, stability, and independent experimental validation are
-demonstrated.
+demonstrated. See [validation document](https://github.com/tpnurmi-code/GBB/blob/main/docs/VALIDATION.MD) for more specific description of the project status. 
 
 ## Future of the project 
 For the longer-term vision for the project, see the [Phase II documentation](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
