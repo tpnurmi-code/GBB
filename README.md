@@ -16,6 +16,33 @@ This approach could provide novel architectural structures and learning algorith
 The whole architecture is designed to be transparent and therefore function as a "laboratory" where different design choices can be tested.  
   
 For further description, see the [short research plan](https://github.com/tpnurmi-code/GBB/blob/main/docs/GBB_Research_Plan_short.pdf) for the project.
+
+### 4. Project status
+
+**GBB is an active research prototype (v0.1.0).**
+
+Current implementation:
+
+- [x] GBB-compatible synthetic BOLD/CBV data generation
+- [x] ROI-specific configurable synthetic ground-truth profiles
+- [x] Ground-truth CfC effective-timescale (`tau`) maps
+- [x] Ground-truth CfC intrinsic-drive maps
+- [x] Ground-truth maps exported as node vectors and NIfTI images
+- [x] Synthetic parameter-recovery evaluation framework
+- [x] Recovery metrics: Pearson r, Spearman rho, MAE, RMSE,
+      regression slope/intercept, and Lin's CCC
+- [x] Perfect-recovery evaluator self-test
+- [ ] End-to-end inverse-model recovery from synthetic CBV/BOLD
+- [ ] Recovery robustness across random seeds
+- [ ] Noise and subject-heterogeneity recovery experiments
+- [ ] Null/reversed-ground-truth falsification experiments
+- [ ] FastKAN connectivity recovery
+- [ ] Independent biological validation with empirical datasets
+
+Mechanistic interpretation of GBB parameter maps remains provisional until
+synthetic recovery, stability, and independent experimental validation are
+demonstrated.
+
 ## Future of the project 
 For the longer-term vision for the project, see the [Phase II documentation](https://github.com/tpnurmi-code/GBB/blob/main/docs/PHASE_II.md)
 
